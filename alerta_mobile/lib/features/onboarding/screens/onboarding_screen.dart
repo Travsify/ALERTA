@@ -114,7 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             size: 80,
                             color: slide['color'] as Color,
                           ),
-                        ).animate(key: ValueKey(index)).fadeIn(duration: 600.ms).scale(duration: 600.ms),
+                        ),
                         const SizedBox(height: 48),
                         Text(
                           slide['title'] as String,
@@ -125,7 +125,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: Colors.white,
                             letterSpacing: -0.5,
                           ),
-                        ).animate(key: ValueKey(index)).fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
+                        ),
                         const SizedBox(height: 20),
                         Text(
                           slide['desc'] as String,
@@ -135,7 +135,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: Colors.white70,
                             height: 1.5,
                           ),
-                        ).animate(key: ValueKey(index)).fadeIn(delay: 400.ms),
+                        ),
+
                       ],
                     ),
                   );

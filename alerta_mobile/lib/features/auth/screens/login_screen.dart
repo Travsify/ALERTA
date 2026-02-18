@@ -32,13 +32,22 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _checkBiometrics() async {
+    // Only prompt biometrics if user has logged in before (has stored PIN)
+    final hasCredentials = await _authService.hasStoredCredentials();
+    if (!hasCredentials) return;
+
     // Small delay to let the UI build slightly before prompting
     await Future.delayed(const Duration(milliseconds: 500));
-    final available = await _biometricHelper.isAvailable();
-    if (available) {
-       _handleBiometricLogin();
+    try {
+      final available = await _biometricHelper.isAvailable();
+      if (available) {
+         _handleBiometricLogin();
+      }
+    } catch (e) {
+      debugPrint("Biometric check failed: $e");
     }
   }
+
 
   void _handleLogin() async {
     setState(() => _isLoading = true);
@@ -81,7 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.darkBackground,
       body: SafeArea(
+
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(

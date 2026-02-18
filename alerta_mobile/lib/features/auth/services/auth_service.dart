@@ -61,4 +61,10 @@ class AuthService {
     final token = await _storage.read(key: 'auth_token');
     return token != null;
   }
+
+  Future<bool> hasStoredCredentials() async {
+    final pin = await _storage.read(key: 'user_pin');
+    return pin != null;
+  }
 }
+

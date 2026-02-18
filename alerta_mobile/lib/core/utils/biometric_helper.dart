@@ -4,10 +4,15 @@ class BiometricHelper {
   final LocalAuthentication auth = LocalAuthentication();
 
   Future<bool> isAvailable() async {
-    final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
-    final bool canAuthenticate = canAuthenticateWithBiometrics || await auth.isDeviceSupported();
-    return canAuthenticate;
+    try {
+      final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+      final bool canAuthenticate = canAuthenticateWithBiometrics || await auth.isDeviceSupported();
+      return canAuthenticate;
+    } catch (e) {
+      return false;
+    }
   }
+
 
   Future<bool> authenticate() async {
     try {
