@@ -2,17 +2,9 @@ services:
   # Laravel Backend
   - type: web
     name: alerta-backend
-    env: php
+    env: docker
     plan: free # Change to starter for better performance
     region: ohio
-    buildCommand: |
-      cd alerta_backend
-      composer install --no-dev
-      php artisan optimize
-      php artisan migrate --force
-    startCommand: |
-      cd alerta_backend
-      php artisan serve --host 0.0.0.0 --port $PORT
     envVars:
       - key: APP_KEY
         generateValue: true
