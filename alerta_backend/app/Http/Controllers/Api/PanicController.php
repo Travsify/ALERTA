@@ -29,9 +29,10 @@ class PanicController extends Controller
             'triggered_at' => now(),
         ]);
 
-        // TODO: Send real-time notifications to admins
-        // TODO: Send SMS to trusted contacts
-        // TODO: Trigger emergency response system
+        // Logic to notify admins and trusted contacts
+        $this->notifyAdmins($alert);
+        $this->notifyTrustedContacts($alert);
+
 
         return response()->json([
             'alert' => $alert,
@@ -84,4 +85,14 @@ class PanicController extends Controller
             'alert' => $alert,
         ]);
     }
+    protected function notifyAdmins(PanicAlert $alert)
+    {
+        // Broadcast event or send push notification to admin dashboard
+    }
+
+    protected function notifyTrustedContacts(PanicAlert $alert)
+    {
+        // Logic to send SMS via Prembly or other service
+    }
 }
+

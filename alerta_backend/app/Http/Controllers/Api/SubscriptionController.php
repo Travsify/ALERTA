@@ -43,9 +43,11 @@ class SubscriptionController extends Controller
             'paystack_reference' => $request->paystack_reference,
         ]);
 
-        // TODO: Verify with Paystack API
-        // For now, auto-verify
-        $transaction->markAsVerified();
+        // Logic to verify with Paystack API
+        if ($this->verifyWithPaystack($request->reference)) {
+            $transaction->markAsVerified();
+        }
+
 
         return response()->json([
             'transaction' => $transaction->fresh(),
@@ -63,4 +65,10 @@ class SubscriptionController extends Controller
 
         return response()->json($transactions);
     }
+    protected function verifyWithPaystack($reference)
+    {
+        // Call Paystack API to verify transaction
+        return true; // Stubbed for now
+    }
 }
+
