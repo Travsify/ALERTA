@@ -1,0 +1,7 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield with checkmark silhouette -->
+  <path d="M80 100V250C80 370 256 450 256 450C256 450 432 370 432 250V100H80Z" fill="#0047AB"/>
+  <path d="M150 250L220 320L360 180" stroke="#4CAF50" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+  <!-- Minimalist A -->
+  <path d="M256 160L210 260M256 160L302 260" stroke="white" stroke-width="20" stroke-linecap="round"/>
+</svg>

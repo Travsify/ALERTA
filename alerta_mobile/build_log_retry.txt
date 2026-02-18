@@ -1,0 +1,10 @@
+Running Gradle task 'assembleRelease'...                        
+Font asset "Font-Awesome-7-Free-Regular-400.otf" was tree-shaken, reducing it from 87332 to 1640 bytes (98.1% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Font asset "Font-Awesome-7-Free-Solid-900.otf" was tree-shaken, reducing it from 410592 to 2376 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 7264 bytes (99.6% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+Running Gradle task 'assembleRelease'...                          493.9s
+√ Built build\app\outputs\flutter-apk\app-release.apk (49.7MB)

@@ -1,0 +1,72 @@
+﻿Running Gradle task 'assembleRelease'...                        
+flutter : lib/feature
+s/subscription/servic
+es/paystack_service.d
+art:25:24: Error: 
+The argument type 
+'int' can't be 
+assigned to the 
+parameter type 
+'String'.
+At line:1 char:1
++ flutter build apk 
+--release 2>&1 | 
+Out-File -Encoding 
+UTF8 build_log_ ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (lib/fea   
+ tures/su... type    
+ 'String'.:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+        amount: 
+amount * 100, // 
+Amount is in kobo
+                     
+  ^
+Target kernel_snapsho
+t_program failed: 
+Exception
+
+
+FAILURE: Build 
+failed with an 
+exception.
+
+* What went wrong:
+Execution failed for 
+task ':app:compileFlu
+tterBuildRelease'.
+> Process 'command 'C
+:\FlutterVersions\flu
+tter\bin\flutter.bat'
+' finished with 
+non-zero exit value 1
+
+* Try:
+> Run with 
+--stacktrace option 
+to get the stack 
+trace.
+> Run with --info or 
+--debug option to 
+get more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at ht
+tps://help.gradle.org
+.
+
+BUILD FAILED in 44s
+Running Gradle task 'assembleRelease'...                           44.8s
+Gradle task 
+assembleRelease 
+failed with exit 
+code 1

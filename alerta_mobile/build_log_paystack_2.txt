@@ -1,0 +1,88 @@
+﻿Running Gradle task 'assembleRelease'...                        
+flutter : lib/feature
+s/subscription/servic
+es/paystack_service.d
+art:18:65: Error: 
+Required named 
+parameter 'onClosed' 
+must be provided.
+At line:1 char:1
++ flutter build apk 
+--release 2>&1 | 
+Out-File -Encoding 
+UTF8 build_log_ ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (lib/fea   
+ tures/su...st be    
+ provided.:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+      final result = 
+await FlutterPaystack
+Plus.openPaystackPopu
+p(
+                     
+                     
+                     
+ ^
+../../../AppData/Loca
+l/Pub/Cache/hosted/pu
+b.dev/flutter_paystac
+k_plus-1.2.1/lib/src/
+paystack.dart:6:23: 
+Context: Found this 
+candidate, but the 
+arguments don't 
+match.
+  static 
+Future<void> 
+openPaystackPopup({
+                     
+ ^^^^^^^^^^^^^^^^^
+Target kernel_snapsho
+t_program failed: 
+Exception
+
+
+FAILURE: Build 
+failed with an 
+exception.
+
+* What went wrong:
+Execution failed for 
+task ':app:compileFlu
+tterBuildRelease'.
+> Process 'command 'C
+:\FlutterVersions\flu
+tter\bin\flutter.bat'
+' finished with 
+non-zero exit value 1
+
+* Try:
+> Run with 
+--stacktrace option 
+to get the stack 
+trace.
+> Run with --info or 
+--debug option to 
+get more log output.
+> Run with --scan to 
+get full insights.
+> Get more help at ht
+tps://help.gradle.org
+.
+
+BUILD FAILED in 1m 
+10s
+Running Gradle task 'assembleRelease'...                           71.4s
+Gradle task 
+assembleRelease 
+failed with exit 
+code 1
