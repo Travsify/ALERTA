@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PanicAlert;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class PanicController extends Controller
@@ -14,8 +15,9 @@ class PanicController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'battery_level' => 'nullable|integer|min:0|max:100',
-            'alert_type' => 'required|in:panic,silent,guardian',
+            'alert_type' => 'required|in:panic,silent,guardian,proactive',
             'is_duress' => 'nullable|boolean',
+            'is_proactive' => 'nullable|boolean',
         ]);
 
         $alert = PanicAlert::create([
@@ -25,19 +27,42 @@ class PanicController extends Controller
             'battery_level' => $request->battery_level,
             'alert_type' => $request->alert_type,
             'is_duress' => $request->is_duress ?? false,
+            'is_proactive' => $request->is_proactive ?? false,
             'status' => 'active',
             'triggered_at' => now(),
         ]);
 
-        // Logic to notify admins and trusted contacts
-        $this->notifyAdmins($alert);
-        $this->notifyTrustedContacts($alert);
-
+        // Smart Multi-Layer Notifications (Zero-Cost Focus)
+        (new NotificationService())->sendEmergencyAlert($request->user(), $alert);
 
         return response()->json([
             'alert' => $alert,
             'message' => 'Emergency alert triggered successfully',
         ], 201);
+    }
+
+    public function heartbeat(Request $request)
+    {
+        $request->validate([
+            'expires_at' => 'required|date|after:now',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        // Create or update a 'proactive' pending alert that will fire if not resolved
+        $alert = PanicAlert::updateOrCreate(
+            ['user_id' => $request->user()->id, 'status' => 'pending_proactive'],
+            [
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'heartbeat_expires_at' => $request->expires_at,
+                'is_proactive' => true,
+                'alert_type' => 'proactive',
+                'triggered_at' => now(),
+            ]
+        );
+
+        return response()->json(['message' => 'Heartbeat received. Your safety is being monitored by the server.']);
     }
 
     public function resolve(Request $request, $id)

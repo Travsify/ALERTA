@@ -79,6 +79,32 @@ class _TrustedContactsScreenState extends State<TrustedContactsScreen> {
                       .toList(),
                   onChanged: (v) => setDialogState(() => relationship = v!),
                 ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: TextEditingController(text: existing?.telegramChatId ?? ''),
+                  style: const TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    labelText: 'Telegram Chat ID (Optional)',
+                    prefixIcon: Icon(FontAwesomeIcons.telegram),
+                    hintText: 'e.g. 123456789',
+                  ),
+                  onChanged: (v) => existing = existing?.copyWith(telegramChatId: v),
+                ),
+                const SizedBox(height: 16),
+                SwitchListTile(
+                  title: const Text('Push Notification', style: TextStyle(color: Colors.white)),
+                  subtitle: const Text('Zero-cost app alert', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                  value: existing?.notifyPush ?? true,
+                  activeColor: AppTheme.primaryBlue,
+                  onChanged: (v) => setDialogState(() => existing = existing?.copyWith(notifyPush: v)),
+                ),
+                SwitchListTile(
+                  title: const Text('Telegram Alert', style: TextStyle(color: Colors.white)),
+                  subtitle: const Text('Works on Social Data', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                  value: existing?.notifyTelegram ?? false,
+                  activeColor: const Color(0xFF0088cc),
+                  onChanged: (v) => setDialogState(() => existing = existing?.copyWith(notifyTelegram: v)),
+                ),
                 const SizedBox(height: 24),
                 SwitchListTile(
                   title: const Text('Receives SOS Alerts', style: TextStyle(color: Colors.white)),
@@ -126,9 +152,12 @@ class _TrustedContactsScreenState extends State<TrustedContactsScreen> {
                   relationship: relationship,
                   receivesSOS: receivesSOS,
                   receivesLocation: receivesLocation,
+                  telegramChatId: existing?.telegramChatId,
+                  notifyPush: existing?.notifyPush ?? true,
+                  notifyTelegram: existing?.notifyTelegram ?? false,
                 );
 
-                if (existing == null) {
+                if (existing?.id == null) {
                   _service.addContact(contact);
                 } else {
                   _service.updateContact(contact);

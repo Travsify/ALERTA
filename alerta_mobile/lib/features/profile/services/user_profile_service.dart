@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserProfile {
-  final String name;
-  final String email;
-  final String phone;
-  final bool isVerified;
-  final DateTime? createdAt;
+  final String? fcmToken;
+  final String? telegramChatId;
+  final bool notifyPush;
+  final bool notifyTelegram;
+  final bool notifySms;
 
   UserProfile({
     required this.name,
@@ -16,6 +16,11 @@ class UserProfile {
     required this.phone,
     this.isVerified = false,
     this.createdAt,
+    this.fcmToken,
+    this.telegramChatId,
+    this.notifyPush = true,
+    this.notifyTelegram = false,
+    this.notifySms = true,
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,14 +29,24 @@ class UserProfile {
     'phone': phone,
     'isVerified': isVerified,
     'createdAt': createdAt?.toIso8601String(),
+    'fcm_token': fcmToken,
+    'telegram_chat_id': telegramChatId,
+    'notify_push': notifyPush,
+    'notify_telegram': notifyTelegram,
+    'notify_sms': notifySms,
   };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
     name: json['name'] ?? 'User',
     email: json['email'] ?? '',
     phone: json['phone'] ?? '',
-    isVerified: json['isVerified'] ?? false,
+    isVerified: json['is_verified'] ?? (json['isVerified'] ?? false),
     createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : (json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null),
+    fcmToken: json['fcm_token'],
+    telegramChatId: json['telegram_chat_id'],
+    notifyPush: json['notify_push'] ?? true,
+    notifyTelegram: json['notify_telegram'] ?? false,
+    notifySms: json['notify_sms'] ?? true,
   );
 
   UserProfile copyWith({
@@ -39,12 +54,22 @@ class UserProfile {
     String? email,
     String? phone,
     bool? isVerified,
+    String? fcmToken,
+    String? telegramChatId,
+    bool? notifyPush,
+    bool? notifyTelegram,
+    bool? notifySms,
   }) => UserProfile(
     name: name ?? this.name,
     email: email ?? this.email,
     phone: phone ?? this.phone,
     isVerified: isVerified ?? this.isVerified,
     createdAt: createdAt,
+    fcmToken: fcmToken ?? this.fcmToken,
+    telegramChatId: telegramChatId ?? this.telegramChatId,
+    notifyPush: notifyPush ?? this.notifyPush,
+    notifyTelegram: notifyTelegram ?? this.notifyTelegram,
+    notifySms: notifySms ?? this.notifySms,
   );
 }
 
@@ -104,6 +129,49 @@ class UserProfileService extends ChangeNotifier {
     );
     await _saveProfileLocally();
     notifyListeners();
+  }
+
+  /// Update notification preferences
+  Future<void> updateNotificationSettings({
+    bool? notifyPush,
+    bool? notifyTelegram,
+    bool? notifySms,
+    String? telegramChatId,
+  }) async {
+    if (_profile == null) return;
+
+    try {
+      final response = await _api.put('/profile', {
+        if (notifyPush != null) 'notify_push': notifyPush,
+        if (notifyTelegram != null) 'notify_telegram': notifyTelegram,
+        if (notifySms != null) 'notify_sms': notifySms,
+        if (telegramChatId != null) 'telegram_chat_id': telegramChatId,
+      });
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _profile = UserProfile.fromJson(data['user']);
+        await _saveProfileLocally();
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error updating notification settings: $e');
+    }
+  }
+
+  /// Update FCM token for push notifications
+  Future<void> updateFcmToken(String token) async {
+    if (_profile == null || _profile?.fcmToken == token) return;
+
+    try {
+      await _api.put('/profile', {'fcm_token': token});
+      _profile = _profile!.copyWith(fcmToken: token);
+      await _saveProfileLocally();
+      notifyListeners();
+      debugPrint("🚀 FCM: Token registered on server");
+    } catch (e) {
+      debugPrint('Error syncing FCM token: $e');
+    }
   }
 
   /// Update profile on server and locally

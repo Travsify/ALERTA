@@ -10,9 +10,8 @@ class ApiService {
 
   final _storage = const FlutterSecureStorage();
   
-  // Base URL for the Alerta Backend
-  // TODO: Update this to your live production URL
-  static const String baseUrl = 'https://app.alertasecure.com/api';
+  // Base URL for the Alerta Backend (Production)
+  static const String baseUrl = 'https://alerta-backend.onrender.com/api';
 
   Future<Map<String, String>> _getHeaders() async {
     final token = await _storage.read(key: 'auth_token');

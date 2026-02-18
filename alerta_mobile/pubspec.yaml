@@ -55,6 +55,8 @@ dependencies:
   record: ^6.1.2
   sensors_plus: ^7.0.0
   flutter_paystack_plus: ^1.2.0
+  nearby_connections: ^5.1.0
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:

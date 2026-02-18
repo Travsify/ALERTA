@@ -3,13 +3,9 @@ import 'package:alerta_mobile/core/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class TrustedContact {
-  final String id;
-  final String name;
-  final String phone;
-  final String relationship;
-  final bool receivesSOS;
-  final bool receivesLocation;
+  final String? telegramChatId;
+  final bool notifyPush;
+  final bool notifyTelegram;
 
   TrustedContact({
     required this.id,
@@ -18,6 +14,9 @@ class TrustedContact {
     required this.relationship,
     this.receivesSOS = true,
     this.receivesLocation = true,
+    this.telegramChatId,
+    this.notifyPush = true,
+    this.notifyTelegram = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -25,8 +24,11 @@ class TrustedContact {
     'name': name,
     'phone': phone,
     'relationship': relationship,
-    'receivesSOS': receivesSOS,
-    'receivesLocation': receivesLocation,
+    'receives_sos': receivesSOS,
+    'receives_location': receivesLocation,
+    'telegram_chat_id': telegramChatId,
+    'notify_push': notifyPush,
+    'notify_telegram': notifyTelegram,
   };
 
   factory TrustedContact.fromJson(Map<String, dynamic> json) => TrustedContact(
@@ -34,8 +36,33 @@ class TrustedContact {
     name: json['name'],
     phone: json['phone'],
     relationship: json['relationship'] ?? 'Guardian',
-    receivesSOS: json['receivesSOS'] ?? (json['receives_sos'] ?? true),
-    receivesLocation: json['receivesLocation'] ?? (json['receives_location'] ?? true),
+    receivesSOS: json['receives_sos'] ?? true,
+    receivesLocation: json['receives_location'] ?? true,
+    telegramChatId: json['telegram_chat_id'],
+    notifyPush: json['notify_push'] ?? true,
+    notifyTelegram: json['notify_telegram'] ?? false,
+  );
+
+  TrustedContact copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? relationship,
+    bool? receivesSOS,
+    bool? receivesLocation,
+    String? telegramChatId,
+    bool? notifyPush,
+    bool? notifyTelegram,
+  }) => TrustedContact(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    phone: phone ?? this.phone,
+    relationship: relationship ?? this.relationship,
+    receivesSOS: receivesSOS ?? this.receivesSOS,
+    receivesLocation: receivesLocation ?? this.receivesLocation,
+    telegramChatId: telegramChatId ?? this.telegramChatId,
+    notifyPush: notifyPush ?? this.notifyPush,
+    notifyTelegram: notifyTelegram ?? this.notifyTelegram,
   );
 }
 
@@ -94,6 +121,9 @@ class TrustedContactsService extends ChangeNotifier {
         'relationship': contact.relationship,
         'receives_sos': contact.receivesSOS,
         'receives_location': contact.receivesLocation,
+        'telegram_chat_id': contact.telegramChatId,
+        'notify_push': contact.notifyPush,
+        'notify_telegram': contact.notifyTelegram,
       });
 
       if (response.statusCode == 201) {
@@ -123,6 +153,9 @@ class TrustedContactsService extends ChangeNotifier {
           'relationship': contact.relationship,
           'receives_sos': contact.receivesSOS,
           'receives_location': contact.receivesLocation,
+          'telegram_chat_id': contact.telegramChatId,
+          'notify_push': contact.notifyPush,
+          'notify_telegram': contact.notifyTelegram,
         });
       } catch (e) {
         debugPrint('Error updating contact on server: $e');

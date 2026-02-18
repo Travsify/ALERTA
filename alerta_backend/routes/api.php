@@ -1,14 +1,15 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PanicController;
-use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\MeshRelayController;
 use App\Http\Controllers\Api\ThreatRadarController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\ProfileController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Panic Alerts
     Route::prefix('panic')->group(function () {
         Route::post('/trigger', [PanicController::class, 'trigger']);
+        Route::post('/heartbeat', [PanicController::class, 'heartbeat']);
         Route::post('/{id}/resolve', [PanicController::class, 'resolve']);
         Route::get('/history', [PanicController::class, 'history']);
         Route::get('/active', [PanicController::class, 'active']);
@@ -44,6 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [ThreatRadarController::class, 'store']);
         Route::post('/{id}/verify', [ThreatRadarController::class, 'verify']);
     });
+    
+    // Mesh SOS Relay (Cross-User)
+    Route::post('/mesh-relay', [MeshRelayController::class, 'store']);
     
     // Location Sharing
     Route::prefix('location')->group(function () {

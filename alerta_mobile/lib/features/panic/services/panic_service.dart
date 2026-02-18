@@ -1,4 +1,5 @@
 import 'package:alerta_mobile/features/contacts/services/trusted_contacts_service.dart';
+import 'package:alerta_mobile/features/panic/services/mesh_service.dart';
 import 'package:alerta_mobile/features/prevention/services/recorder_service.dart';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -13,6 +14,7 @@ class PanicService {
   final Battery _battery = Battery();
   final TrustedContactsService _contactsService = TrustedContactsService();
   final RecorderService _recorder = RecorderService();
+  final MeshService _meshService = MeshService();
 
   /// Trigger full panic mode - SMS + Blackbox
   Future<void> triggerPanic() async {
@@ -39,20 +41,38 @@ class PanicService {
       debugPrint("⚠️ No trusted contacts saved, using demo number");
     }
 
-    // 4. Send SMS (Offline Fallback)
-    await _sendSMS(message, recipients);
+    // 4. SMS logic moved to Step 6 for Smart Routing Fallback
 
-    // 5. Trigger Backend Alert (Online Sync)
+    // 5. Trigger Backend Alert (Online Sync: Push + Telegram)
+    final sosPayload = {
+      'user_id': UserProfileService().profile?.id ?? 'unknown',
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'battery_level': batteryLevel,
+      'alert_type': 'emergency',
+      'is_duress': false,
+    };
+
+    bool syncSuccess = false;
     try {
-      await ApiService().post('/panic/trigger', {
-        'latitude': position.latitude,
-        'longitude': position.longitude,
+      final response = await ApiService().post('/panic/trigger', {
+        ...sosPayload,
         'message': message,
-        'battery_level': batteryLevel,
-      });
-      debugPrint("✅ Panic alert synced with server");
+      }).timeout(const Duration(seconds: 5)); // 5s Smart Timeout
+      
+      if (response.statusCode == 201) {
+        syncSuccess = true;
+        debugPrint("✅ SOS: Backend synchronized. Push/Telegram triggered.");
+      }
     } catch (e) {
-      debugPrint("⚠️ Failed to sync panic alert with server: $e");
+      debugPrint("⚠️ SOS: Backend Sync Failed/Timeout. Falling back to Hardware...");
+    }
+
+    // 6. Hardware Fallback (Native SIM SMS + Mesh Relay)
+    if (!syncSuccess) {
+      debugPrint("🚨 SOS: Executing Hardware Fallback (SMS + Mesh)");
+      await _sendSMS(message, recipients);
+      await _meshService.broadcastSOSOffline(sosPayload);
     }
 
     // 6. Start Blackbox Recording

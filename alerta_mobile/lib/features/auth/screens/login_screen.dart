@@ -3,6 +3,7 @@ import 'package:alerta_mobile/core/utils/biometric_helper.dart';
 import 'package:alerta_mobile/features/auth/screens/register_screen.dart';
 import 'package:alerta_mobile/features/auth/services/auth_service.dart';
 import 'package:alerta_mobile/features/dashboard/screens/dashboard_screen.dart';
+import 'package:alerta_mobile/features/dashboard/screens/dummy_dashboard_screen.dart';
 import 'package:alerta_mobile/features/profile/services/user_profile_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -65,6 +66,13 @@ class _LoginScreenState extends State<LoginScreen> {
            // We do NOT tell the user. We just trigger it.
            PanicService().triggerSilentAlarm(); 
            debugPrint("SILENT DURESS ALARM TRIGGERED");
+           
+           if (mounted) {
+             Navigator.of(context).pushReplacement(
+               MaterialPageRoute(builder: (_) => const DummyDashboardScreen())
+             );
+           }
+           return;
         }
 
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const DashboardScreen()));

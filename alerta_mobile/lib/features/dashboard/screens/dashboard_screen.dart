@@ -1,4 +1,5 @@
 import 'package:alerta_mobile/core/theme/app_theme.dart';
+import 'package:alerta_mobile/features/panic/services/dead_man_service.dart';
 import 'package:alerta_mobile/features/panic/services/panic_service.dart';
 import 'package:alerta_mobile/features/prevention/screens/blackbox_screen.dart';
 import 'package:alerta_mobile/features/prevention/screens/safety_map_screen.dart';
@@ -131,7 +132,70 @@ class HomeView extends StatelessWidget {
   const HomeView({super.key, required this.onSwitchTab});
 
   // ... _showGhostModeDialog implementation below ...
-  void _showGhostModeDialog(BuildContext context) {
+  void _showDeadManSwitchDialog(BuildContext context) {
+    final deadMan = DeadManService();
+    int minutes = 10;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: AppTheme.cardSurface,
+          title: const Text('Dead Man\'s Switch', style: TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(FontAwesomeIcons.clock, size: 48, color: Colors.redAccent),
+              const SizedBox(height: 16),
+              const Text(
+                'If you don\'t check in before the timer expires, an automated SOS will be sent to your contacts.',
+                 textAlign: TextAlign.center,
+                 style: TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 24),
+              if (!deadMan.isActive) ...[
+                Text('Set Timer: $minutes min', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                Slider(
+                  value: minutes.toDouble(),
+                  min: 5,
+                  max: 120,
+                  divisions: 23,
+                  activeColor: AppTheme.primaryRed,
+                  onChanged: (v) => setDialogState(() => minutes = v.toInt()),
+                ),
+              ] else ...[
+                 ListTile(
+                   title: const Text('Timer Active', style: TextStyle(color: Colors.white)),
+                   subtitle: Text('${(deadMan.secondsRemaining / 60).floor()}m ${deadMan.secondsRemaining % 60}s remaining', style: const TextStyle(color: AppTheme.primaryRed)),
+                   trailing: const CircularProgressIndicator(color: AppTheme.primaryRed, strokeWidth: 2),
+                 ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+            if (!deadMan.isActive)
+              ElevatedButton(
+                onPressed: () {
+                  deadMan.start(minutes);
+                  Navigator.pop(context);
+                },
+                child: const Text('Start Timer'),
+              )
+            else
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.successGreen),
+                onPressed: () {
+                  deadMan.stop();
+                  Navigator.pop(context);
+                },
+                child: const Text('I AM SAFE (STOP)'),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
     String selectedMode = 'calculator';
 
     showDialog(
@@ -376,6 +440,13 @@ class HomeView extends StatelessWidget {
                     subtitle: 'Live Location',
                     color: AppTheme.primaryBlue,
                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ShareTripScreen())),
+                  ),
+                  _FeatureCard(
+                    icon: FontAwesomeIcons.clock,
+                    title: "Dead Man's",
+                    subtitle: 'Auto-SOS Timer',
+                    color: Colors.redAccent,
+                    onTap: () => _showDeadManSwitchDialog(context),
                   ),
                   _FeatureCard(
                     icon: FontAwesomeIcons.userShield,

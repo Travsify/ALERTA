@@ -145,6 +145,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildMedicalCard(context, medicalId),
 
                   const SizedBox(height: 24),
+                  _buildSectionHeader(context, 'ZERO-COST NOTIFICATIONS'),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardSurface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white05),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildSettingsTile(
+                          FontAwesomeIcons.telegram, 
+                          'Connect Telegram', 
+                          profile?.telegramChatId != null ? 'Connected: ${profile?.telegramChatId}' : 'Receive alerts via Telegram Bot',
+                          onTap: () => _showTelegramConnectDialog(),
+                        ),
+                        const Divider(color: Colors.white12),
+                        SwitchListTile(
+                          value: profile?.notifyPush ?? true,
+                          onChanged: (v) => _profileService.updateNotificationSettings(notifyPush: v),
+                          activeColor: AppTheme.primaryBlue,
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Push Notifications', style: TextStyle(color: Colors.white)),
+                          subtitle: const Text('Fastest zero-cost alert', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                        ),
+                        SwitchListTile(
+                          value: profile?.notifyTelegram ?? false,
+                          onChanged: (v) => _profileService.updateNotificationSettings(notifyTelegram: v),
+                          activeColor: const Color(0xFF0088cc),
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Telegram Alerts', style: TextStyle(color: Colors.white)),
+                          subtitle: const Text('Works on Social Data bundles', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
                   _buildSectionHeader(context, 'SECURITY SETTINGS'),
                   const SizedBox(height: 8),
                   _buildSecurityTile(Icons.lock, 'Change Master PIN', 'Update your main access code', 
@@ -358,7 +397,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSettingsTile(IconData icon, String title, String subtitle) {
+  Widget _buildSettingsTile(IconData icon, String title, String subtitle, {VoidCallback? onTap}) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Container(
@@ -372,7 +411,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       title: Text(title, style: const TextStyle(color: Colors.white)),
       subtitle: Text(subtitle, style: const TextStyle(color: Colors.white38, fontSize: 12)),
       trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white12, size: 12),
-      onTap: () {
+      onTap: onTap ?? () {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$title - Coming Soon')));
       },
     );
@@ -587,6 +626,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             },
             child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTelegramConnectDialog() {
+    final controller = TextEditingController(text: _profileService.profile?.telegramChatId ?? '');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.cardSurface,
+        title: const Text('Connect Telegram', style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '1. Message our bot @AlertaSecureBot\n2. Type /start to get your ID\n3. Paste the ID below',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Telegram Chat ID',
+                hintText: 'e.g. 123456789',
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              await _profileService.updateNotificationSettings(telegramChatId: controller.text);
+              if (mounted) Navigator.pop(context);
+            },
+            child: const Text('Connect'),
           ),
         ],
       ),
