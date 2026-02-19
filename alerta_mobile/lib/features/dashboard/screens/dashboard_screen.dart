@@ -1,24 +1,5 @@
-import 'package:alerta_mobile/core/theme/app_theme.dart';
-import 'package:alerta_mobile/features/panic/services/dead_man_service.dart';
-import 'package:alerta_mobile/features/panic/services/panic_service.dart';
-import 'package:alerta_mobile/features/prevention/screens/blackbox_screen.dart';
-import 'package:alerta_mobile/features/prevention/screens/safety_map_screen.dart';
-import 'package:alerta_mobile/features/prevention/screens/transport_vetting_screen.dart';
-import 'package:alerta_mobile/features/profile/screens/profile_screen.dart';
-import 'package:alerta_mobile/features/recovery/screens/crisis_log_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:alerta_mobile/features/guardian/screens/guardian_mode_screen.dart';
-import 'package:alerta_mobile/features/threat_radar/services/threat_radar_service.dart';
-import 'package:alerta_mobile/features/panic/services/shake_to_panic_service.dart';
-import 'package:alerta_mobile/features/fake_call/screens/fake_call_screen.dart';
-import 'package:alerta_mobile/features/live_location/screens/share_trip_screen.dart';
-import 'package:alerta_mobile/features/contacts/screens/trusted_contacts_screen.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:alerta_mobile/features/subscription/services/subscription_service.dart';
-import 'package:alerta_mobile/features/subscription/screens/subscription_screen.dart';
-import 'package:alerta_mobile/features/profile/services/user_profile_service.dart';
+import 'package:alerta_mobile/core/services/connectivity_service.dart';
+import 'package:alerta_mobile/core/theme/typography.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -30,12 +11,14 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
   final ThreatRadarService _threatRadar = ThreatRadarService();
+  final ConnectivityService _connectivity = ConnectivityService();
 
   @override
   void initState() {
     super.initState();
     _threatRadar.startMonitoring();
     _threatRadar.addListener(_onThreatUpdate);
+    _connectivity.addListener(_onConnectivityChange);
     
     // Enable Shake to Panic
     ShakeToPanicService().enable();
@@ -45,6 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void dispose() {
     _threatRadar.removeListener(_onThreatUpdate);
     _threatRadar.dispose();
+    _connectivity.removeListener(_onConnectivityChange);
     ShakeToPanicService().disable();
     super.dispose();
   }
@@ -53,6 +37,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_threatRadar.nearestThreat != null && mounted) {
       setState(() {}); // Rebuild to show alert
     }
+  }
+
+  void _onConnectivityChange() {
+    if (mounted) setState(() {});
   }
 
   void _switchTab(int index) {
@@ -71,6 +59,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       body: Column(
         children: [
+          // Device Offline Banner
+          if (_connectivity.isOffline)
+            Container(
+              width: double.infinity,
+              color: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: SafeArea(
+                bottom: false,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.wifi_off_rounded, color: Colors.orange, size: 16),
+                    const SizedBox(width: 8),
+                    Text(
+                      'OFFLINE MODE - SOS via SMS/Mesh only',
+                      style: AppTypography.labelMedium.copyWith(color: Colors.orange, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            ).animate().slideY(begin: -1, end: 0),
+
           // Threat Radar Alert Banner
           if (_threatRadar.nearestThreat != null)
             AnimatedContainer(
@@ -90,11 +100,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: [
                           Text(
                             'THREAT DETECTED - ${_threatRadar.distanceToThreat?.toStringAsFixed(0)}m AWAY',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                            style: AppTypography.labelMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             _threatRadar.nearestThreat!.name,
-                            style: const TextStyle(color: Colors.white70, fontSize: 11),
+                            style: AppTypography.bodySmall.copyWith(color: Colors.white70),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -103,7 +113,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     TextButton(
                       onPressed: () => _switchTab(1), // Go to Map
-                      child: const Text('VIEW MAP', style: TextStyle(color: Colors.white)),
+                      child: Text('VIEW MAP', style: AppTypography.labelLarge.copyWith(color: Colors.white)),
                     ),
                   ],
                 ),
@@ -150,7 +160,7 @@ class HomeView extends StatelessWidget {
               const Text(
                 'If you don\'t check in before the timer expires, an automated SOS will be sent to your contacts.',
                  textAlign: TextAlign.center,
-                 style: TextStyle(color: Colors.white70),
+                 style: AppTypography.bodyMedium,
               ),
               const SizedBox(height: 24),
               if (!deadMan.isActive) ...[
@@ -165,8 +175,8 @@ class HomeView extends StatelessWidget {
                 ),
               ] else ...[
                  ListTile(
-                   title: const Text('Timer Active', style: TextStyle(color: Colors.white)),
-                   subtitle: Text('${(deadMan.secondsRemaining / 60).floor()}m ${deadMan.secondsRemaining % 60}s remaining', style: const TextStyle(color: AppTheme.primaryRed)),
+                   title: Text('Timer Active', style: AppTypography.bodyMedium.copyWith(color: Colors.white)),
+                   subtitle: Text('${(deadMan.secondsRemaining / 60).floor()}m ${deadMan.secondsRemaining % 60}s remaining', style: AppTypography.bodySmall.copyWith(color: AppTheme.primaryRed)),
                    trailing: const CircularProgressIndicator(color: AppTheme.primaryRed, strokeWidth: 2),
                  ),
               ],
@@ -205,7 +215,7 @@ class HomeView extends StatelessWidget {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           backgroundColor: AppTheme.cardSurface,
-          title: const Text('Ghost Mode', style: TextStyle(color: Colors.white)),
+          title: Text('Ghost Mode', style: AppTypography.heading2),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -219,7 +229,7 @@ class HomeView extends StatelessWidget {
               const SizedBox(height: 24),
               ListTile(
                 leading: const Icon(Icons.calculate, color: Colors.orange),
-                title: const Text('Calculator Mode', style: TextStyle(color: Colors.white)),
+                title: Text('Calculator Mode', style: AppTypography.bodyMedium.copyWith(color: Colors.white)),
                 onTap: () => setDialogState(() => selectedMode = 'calculator'),
                 trailing: Radio<String>(
                   value: 'calculator', 
@@ -230,7 +240,7 @@ class HomeView extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.cloud, color: Colors.blue),
-                title: const Text('Weather Mode', style: TextStyle(color: Colors.white)),
+                title: Text('Weather Mode', style: AppTypography.bodyMedium.copyWith(color: Colors.white)),
                 onTap: () => setDialogState(() => selectedMode = 'weather'),
                 trailing: Radio<String>(
                   value: 'weather', 
@@ -306,7 +316,7 @@ class HomeView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text('Hi, $userName', style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                        Text('Hi, $userName', style: AppTypography.heading2),
                       ],
                     );
                   }
@@ -375,8 +385,8 @@ class HomeView extends StatelessWidget {
                       const Icon(Icons.touch_app_rounded, size: 48, color: Colors.white)
                           .animate(onPlay: (c) => c.repeat()).scale(duration: 1.seconds, begin: const Offset(1,1), end: const Offset(1.2, 1.2)).then().scale(begin: const Offset(1.2, 1.2), end: const Offset(1,1)),
                       const SizedBox(height: 16),
-                      Text('TAP FOR EMERGENCY', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
-                      const Text('Hold for 3 seconds', style: TextStyle(color: Colors.white70)),
+                      Text('TAP FOR EMERGENCY', style: AppTypography.panicButton),
+                      Text('Hold for 3 seconds', style: AppTypography.bodySmall.copyWith(color: Colors.white70)),
                     ],
                   ),
                 ),
@@ -384,7 +394,7 @@ class HomeView extends StatelessWidget {
             ),
 
             const SizedBox(height: 32),
-            Text('Prevention Tools', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white54)),
+            Text('Prevention Tools', style: AppTypography.labelLarge.copyWith(color: Colors.white54)),
             const SizedBox(height: 16),
 
             // Tools Grid
@@ -495,9 +505,9 @@ class _FeatureCard extends StatelessWidget {
                 child: FaIcon(icon, color: color, size: 20),
               ),
               const SizedBox(height: 16),
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+              Text(title, style: AppTypography.labelLarge.copyWith(color: Colors.white, letterSpacing: 0)),
               const SizedBox(height: 4),
-              Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.white38)),
+              Text(subtitle, style: AppTypography.bodySmall.copyWith(fontSize: 11, color: Colors.white38)),
             ],
           ),
         ),

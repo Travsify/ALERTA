@@ -77,13 +77,13 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Report Incident', style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)),
+            Text('Report Incident', style: AppTypography.heading2),
             const SizedBox(height: 8),
             Text(
               _currentLocation != null 
                 ? 'Location: ${_currentLocation!.latitude.toStringAsFixed(4)}, ${_currentLocation!.longitude.toStringAsFixed(4)}'
                 : 'Getting location...',
-              style: const TextStyle(color: Colors.white54, fontSize: 12),
+              style: AppTypography.bodySmall,
             ),
             const SizedBox(height: 24),
             Row(
@@ -120,7 +120,7 @@ class _SafetyMapScreenState extends State<SafetyMapScreen> {
             child: Icon(icon, color: color, size: 30),
           ),
           const SizedBox(height: 8),
-          Text(label, style: const TextStyle(color: Colors.white)),
+          Text(label, style: AppTypography.bodyMedium.copyWith(color: Colors.white)),
         ],
       ),
     );

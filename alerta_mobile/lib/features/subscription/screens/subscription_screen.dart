@@ -67,16 +67,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       children: [
                         const SizedBox(height: 24),
-                        const Text(
+                        Text(
                           'CHOOSE YOUR SAFETY PLAN',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 2),
+                          style: AppTypography.labelLarge.copyWith(fontSize: 18, letterSpacing: 2),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Ensure 24/7 protection for you and your loved ones.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white54, fontSize: 13),
+                          style: AppTypography.bodySmall,
                         ),
                         const SizedBox(height: 32),
                         ..._plans.map((plan) => _buildPlanCard(plan)),
@@ -112,16 +112,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             children: [
               Text(
                 sub.isTrialActive ? 'TRIAL ACCESS' : (sub.isSubscribed ? 'PRO ACTIVE' : 'EXPIRED'),
-                style: TextStyle(
-                  color: sub.hasAccess ? AppTheme.successGreen : AppTheme.primaryRed,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  letterSpacing: 1.5,
-                ),
+                  style: AppTypography.labelLarge.copyWith(
+                    color: sub.hasAccess ? AppTheme.successGreen : AppTheme.primaryRed,
+                    fontSize: 12,
+                    letterSpacing: 1.5,
+                  ),
               ),
               Text(
                 '${sub.daysRemaining} DAYS REMAINING',
-                style: const TextStyle(color: Colors.white54, fontSize: 10),
+                style: AppTypography.labelMedium.copyWith(fontSize: 10),
               ),
             ],
           ),
@@ -170,10 +169,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(plan.name, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(plan.name, style: AppTypography.heading2.copyWith(fontSize: 20)),
                       const SizedBox(height: 4),
                       Text('₦${plan.price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}', 
-                        style: const TextStyle(color: AppTheme.primaryRed, fontSize: 18, fontWeight: FontWeight.bold)),
+                        style: AppTypography.heading2.copyWith(color: AppTheme.primaryRed, fontSize: 18)),
                     ],
                   ),
                 ),

@@ -79,11 +79,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           Text(
             'Who are you?',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: Colors.white, fontWeight: FontWeight.bold),
+            style: AppTypography.heading2,
           ),
           const SizedBox(height: 8),
-          const Text('Verification is required to prevent misuse.', style: TextStyle(color: Colors.white54)),
+          Text('Verification is required to prevent misuse.', style: AppTypography.bodySmall),
           const SizedBox(height: 32),
           
           TextField(
@@ -125,18 +124,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           Text(
             'Verify Phone',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: Colors.white, fontWeight: FontWeight.bold),
+            style: AppTypography.heading2,
           ),
           const SizedBox(height: 8),
-          Text('Enter the code sent to ${_phoneController.text}', style: const TextStyle(color: Colors.white54)),
+          Text('Enter the code sent to ${_phoneController.text}', style: AppTypography.bodySmall),
           const SizedBox(height: 32),
           
           TextField(
             controller: _otpController,
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
+            style: AppTypography.heading1.copyWith(letterSpacing: 8),
             decoration: const InputDecoration(
               hintText: '000000',
               prefixIcon: Icon(Icons.sms),
@@ -170,13 +168,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             Text(
               'Set your Vault Keys',
-               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Colors.white, fontWeight: FontWeight.bold),
+               style: AppTypography.heading2,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Create a 4-Digit Master PIN for daily access, and a Ghost PIN for when you are in danger.', 
-              style: TextStyle(color: Colors.white54, height: 1.5)
+              style: AppTypography.bodySmall.copyWith(height: 1.5),
             ),
             const SizedBox(height: 32),
         
@@ -257,12 +254,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const Icon(Icons.check_circle_outline, size: 100, color: AppTheme.successGreen)
               .animate().scale(curve: Curves.elasticOut),
           const SizedBox(height: 24),
-          Text('You are Alerta Ready', style: Theme.of(context).textTheme.headlineMedium),
+          Text('You are Alerta Ready', style: AppTypography.heading2),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Your implementation of safety starts now.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white54),
+            style: AppTypography.bodyMedium,
           ),
           const SizedBox(height: 48),
           ElevatedButton(

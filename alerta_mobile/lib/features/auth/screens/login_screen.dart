@@ -118,18 +118,13 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 'Alerta',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                style: AppTypography.heading1,
               ),
               const SizedBox(height: 8),
               Text(
                 'Safety in your pocket.',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white54,
-                    ),
+                style: AppTypography.bodyLarge.copyWith(color: Colors.white54),
               ),
               const SizedBox(height: 60),
 
@@ -147,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _pinController,
                 obscureText: true,
                 keyboardType: TextInputType.number,
-                 style: const TextStyle(color: Colors.white),
+                 style: AppTypography.bodyLarge,
                 decoration: const InputDecoration(
                   labelText: 'Master PIN', // Changed from Security PIN
                   prefixIcon: Icon(Icons.lock_outline, color: Colors.white54),
@@ -189,13 +184,13 @@ class _LoginScreenState extends State<LoginScreen> {
                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => RegisterScreen()));
                 },
                 child: RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     text: "New to Alerta? ",
-                    style: TextStyle(color: Colors.white54),
+                    style: AppTypography.bodyMedium,
                     children: [
                       TextSpan(
                         text: "Activate Account",
-                        style: TextStyle(color: AppTheme.primaryRed, fontWeight: FontWeight.bold),
+                        style: AppTypography.bodyMedium.copyWith(color: AppTheme.primaryRed, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

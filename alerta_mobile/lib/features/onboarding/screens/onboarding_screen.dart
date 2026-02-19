@@ -78,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   if (_currentPage != _slides.length - 1)
                     TextButton(
                       onPressed: _finishOnboarding,
-                      child: const Text('LOGIN', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: Text('LOGIN', style: AppTypography.labelLarge.copyWith(color: Colors.white)),
                     ),
                 ],
               ),
@@ -119,22 +119,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Text(
                           slide['title'] as String,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: -0.5,
-                          ),
+                          style: AppTypography.heading2,
                         ),
                         const SizedBox(height: 20),
                         Text(
                           slide['desc'] as String,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white70,
-                            height: 1.5,
-                          ),
+                          style: AppTypography.bodyMedium.copyWith(height: 1.5),
                         ),
 
                       ],
