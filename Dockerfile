@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libpq-dev \
-    && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd intl zip
+    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd intl zip
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

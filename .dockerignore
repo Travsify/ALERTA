@@ -1,0 +1,13 @@
+.env
+.idea
+.git
+*/.env
+*/vendor
+*/node_modules
+alerta_mobile/
+test_build/
+*.zip
+*.bat
+*.ps1
+docker-compose.yml
+docker-compose.override.yml
