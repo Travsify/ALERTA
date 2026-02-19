@@ -4,9 +4,10 @@ import 'package:flutter_paystack_plus/flutter_paystack_plus.dart';
 import 'package:alerta_mobile/features/subscription/models/subscription_plan.dart';
 import 'package:alerta_mobile/features/subscription/services/subscription_service.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class PaystackService {
-  // IMPORTANT: Replace with your real Paystack Public Key
-  static const String _publicKey = 'pk_test_7395d95941c1480000fc6decc17a00ed54a1395e';
+  static String? get _publicKey => dotenv.env['PAYSTACK_PUBLIC_KEY'];
 
   Future<bool> checkout({
     required BuildContext context,

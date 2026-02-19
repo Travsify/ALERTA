@@ -15,7 +15,7 @@ class NotificationService
 
     public function __construct()
     {
-        $this->telegramToken = config('services.telegram.bot_token', env('TELEGRAM_BOT_TOKEN'));
+        $this->telegramToken = config('services.telegram.bot_token');
         
         try {
             $this->messaging = app('firebase.messaging');

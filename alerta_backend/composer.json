@@ -17,7 +17,8 @@
         "laravel/tinker": "^2.8",
         "yabacon/paystack-php": "^2.2",
         "filament/filament": "^3.2",
-        "kreait/laravel-firebase": "^5.0"
+        "kreait/laravel-firebase": "^5.0",
+        "sentry/sentry-laravel": "^4.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

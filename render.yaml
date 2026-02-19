@@ -34,6 +34,14 @@ services:
         fromDatabase:
           name: alerta-db
           property: port
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CREDENTIALS_JSON # Path or raw JSON string
+        sync: false
 
 databases:
   - name: alerta-db
