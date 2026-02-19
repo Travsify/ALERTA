@@ -7,9 +7,11 @@ import 'package:flutter_sms/flutter_sms.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:alerta_mobile/core/services/api_service.dart';
 import 'package:alerta_mobile/features/profile/services/user_profile_service.dart';
+import 'package:alerta_mobile/features/panic/services/heartbeat_service.dart';
 
 class PanicService {
   final Battery _battery = Battery();
@@ -63,7 +65,13 @@ class PanicService {
       
       if (response.statusCode == 201) {
         syncSuccess = true;
-        debugPrint("✅ SOS: Backend synchronized. Push/Telegram triggered.");
+        final data = jsonDecode(response.body);
+        final alertId = data['alert']['id'];
+        
+        // Start Periodic Heartbeats for Tracking
+        HeartbeatService().startTracking(alertId);
+        
+        debugPrint("✅ SOS: Backend synchronized (#$alertId). Tracking heartbeats started.");
       }
     } catch (e) {
       debugPrint("⚠️ SOS: Backend Sync Failed/Timeout. Falling back to Hardware...");

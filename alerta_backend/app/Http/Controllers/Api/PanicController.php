@@ -20,19 +20,35 @@ class PanicController extends Controller
             'is_proactive' => 'nullable|boolean',
         ]);
 
-        $alert = PanicAlert::create([
-            'user_id' => $request->user()->id,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'battery_level' => $request->battery_level,
-            'alert_type' => $request->alert_type,
-            'is_duress' => $request->is_duress ?? false,
-            'is_proactive' => $request->is_proactive ?? false,
-            'status' => 'active',
-            'triggered_at' => now(),
-        ]);
+        // Check if there is an existing 'pending_proactive' alert to upgrade
+        $alert = PanicAlert::where('user_id', $request->user()->id)
+            ->where('status', 'pending_proactive')
+            ->first();
 
-        // Smart Multi-Layer Notifications (Zero-Cost Focus)
+        if ($alert) {
+            $alert->update([
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'battery_level' => $request->battery_level,
+                'alert_type' => $request->alert_type,
+                'status' => 'active',
+                'triggered_at' => now(),
+            ]);
+        } else {
+            $alert = PanicAlert::create([
+                'user_id' => $request->user()->id,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'battery_level' => $request->battery_level,
+                'alert_type' => $request->alert_type,
+                'is_duress' => $request->is_duress ?? false,
+                'is_proactive' => $request->is_proactive ?? false,
+                'status' => 'active',
+                'triggered_at' => now(),
+            ]);
+        }
+
+        // Trigger Notifications
         (new NotificationService())->sendEmergencyAlert($request->user(), $alert);
 
         return response()->json([
@@ -44,25 +60,43 @@ class PanicController extends Controller
     public function heartbeat(Request $request)
     {
         $request->validate([
-            'expires_at' => 'required|date|after:now',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
+            'expires_at' => 'nullable|date', // If provided, it's a proactive timer
+            'alert_id' => 'nullable|exists:panic_alerts,id',
         ]);
 
-        // Create or update a 'proactive' pending alert that will fire if not resolved
-        $alert = PanicAlert::updateOrCreate(
-            ['user_id' => $request->user()->id, 'status' => 'pending_proactive'],
-            [
+        // 1. If it's a new or existing proactive timer
+        if ($request->has('expires_at')) {
+            $alert = PanicAlert::updateOrCreate(
+                ['user_id' => $request->user()->id, 'status' => 'pending_proactive'],
+                [
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'heartbeat_expires_at' => $request->expires_at,
+                    'is_proactive' => true,
+                    'alert_type' => 'proactive',
+                    'triggered_at' => now(),
+                ]
+            );
+            return response()->json(['message' => 'Proactive timer updated.', 'alert_id' => $alert->id]);
+        }
+
+        // 2. If it's a heartbeat for an ACTIVE alert (Tracking)
+        if ($request->has('alert_id')) {
+            $alert = PanicAlert::where('id', $request->alert_id)
+                ->where('user_id', $request->user()->id)
+                ->firstOrFail();
+            
+            $alert->update([
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
-                'heartbeat_expires_at' => $request->expires_at,
-                'is_proactive' => true,
-                'alert_type' => 'proactive',
-                'triggered_at' => now(),
-            ]
-        );
+            ]);
+            
+            return response()->json(['message' => 'Location tracking updated.']);
+        }
 
-        return response()->json(['message' => 'Heartbeat received. Your safety is being monitored by the server.']);
+        return response()->json(['message' => 'Heartbeat received.'], 200);
     }
 
     public function resolve(Request $request, $id)
