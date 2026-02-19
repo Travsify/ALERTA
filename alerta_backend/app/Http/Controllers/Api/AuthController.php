@@ -16,8 +16,8 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|string|max:255|unique:users',
-            'password' => 'required|string|min:4',
-            'duress_pin' => 'nullable|string|min:4',
+            'password' => 'required|string|min:8',
+            'duress_pin' => 'nullable|string|min:4', // PINs are usually 4 digits, keeping it for now
         ]);
 
         $user = User::create([
