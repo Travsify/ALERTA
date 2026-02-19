@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\PaymentTransaction;
 use Illuminate\Http\Request;
 
+/**
+ * @group Subscription & Billing
+ *
+ * APIs for managing subscription status, plan verification, and payment transactions.
+ */
 class SubscriptionController extends Controller
 {
     public function status(Request $request)

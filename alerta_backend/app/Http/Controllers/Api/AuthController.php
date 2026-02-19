@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+
+/**
+ * @group Authentication
+ *
+ * APIs for managing user registration, login, and logout.
+ */
 class AuthController extends Controller
 {
     public function register(Request $request)

@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\PanicAlert;
 use Illuminate\Http\Request;
 
+/**
+ * @group Mesh SOS Relay
+ *
+ * APIs for relaying SOS alerts to nearby Alerta users via the Mesh network.
+ */
 class MeshRelayController extends Controller
 {
     /**

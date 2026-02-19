@@ -336,7 +336,10 @@ class HomeView extends StatelessWidget {
             const SizedBox(height: 32),
 
             // Panic Button
-            Container(
+            Semantics(
+              label: 'Emergency SOS Button. Hold for 3 seconds to send distress signal to trusted contacts.',
+              button: true,
+              child: Container(
               height: 180,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -392,6 +395,7 @@ class HomeView extends StatelessWidget {
                 ),
               ),
             ),
+            ), // end Semantics
 
             const SizedBox(height: 32),
             Text('Prevention Tools', style: AppTypography.labelLarge.copyWith(color: Colors.white54)),
@@ -488,7 +492,10 @@ class _FeatureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return Semantics(
+      label: '$title. $subtitle',
+      button: true,
+      child: Material(
       color: AppTheme.cardSurface,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(

@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\ThreatReport;
 use Illuminate\Http\Request;
 
+/**
+ * @group Threat Radar
+ *
+ * APIs for reporting, verifying, and discovering nearby safety threats.
+ */
 class ThreatRadarController extends Controller
 {
     public function nearby(Request $request)

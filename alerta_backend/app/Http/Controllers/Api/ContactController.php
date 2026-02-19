@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\TrustedContact;
 use Illuminate\Http\Request;
 
+/**
+ * @group Trusted Contacts
+ *
+ * APIs for managing emergency trusted contacts.
+ */
 class ContactController extends Controller
 {
     public function index(Request $request)

@@ -7,6 +7,12 @@ use App\Models\PanicAlert;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
+
+/**
+ * @group Panic Alerts (SOS)
+ *
+ * APIs for triggering, tracking, and resolving emergency SOS alerts.
+ */
 class PanicController extends Controller
 {
     public function trigger(Request $request)

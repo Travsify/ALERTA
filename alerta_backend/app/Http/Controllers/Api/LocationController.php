@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\LocationShare;
 use Illuminate\Http\Request;
 
+/**
+ * @group Location Sharing
+ *
+ * APIs for real-time location sharing and tracking during active alerts.
+ */
 class LocationController extends Controller
 {
     public function start(Request $request)
