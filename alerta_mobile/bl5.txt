@@ -1,0 +1,94 @@
+﻿Running Gradle task 'assembleDebug'...                          
+flutter : warning: 
+[options] source value 8 
+is obsolete and will be 
+removed in a future 
+release
+At line:1 char:1
++ flutter build apk 
+--debug > build_log_5.txt 
+2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (w  
+  arning: [optio... fut   
+ ure release:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+warning: [options] target 
+value 8 is obsolete and 
+will be removed in a 
+future release
+warning: [options] To 
+suppress warnings about 
+obsolete options, use 
+-Xlint:-options.
+3 warnings
+warning: [options] source 
+value 8 is obsolete and 
+will be removed in a 
+future release
+warning: [options] target 
+value 8 is obsolete and 
+will be removed in a 
+future release
+warning: [options] To 
+suppress warnings about 
+obsolete options, use 
+-Xlint:-options.
+C:\Users\USER\AppData\Loca
+l\Pub\Cache\hosted\pub.dev
+\nearby_connections-4.3.0\
+android\src\main\java\com\
+pkmnapps\nearby_connection
+s\NearbyConnectionsPlugin.
+java:274: warning: 
+[deprecation] 
+getAuthenticationToken() 
+in ConnectionInfo has 
+been deprecated
+			args.put("authenticatio
+nToken", connectionInfo.ge
+tAuthenticationToken());
+			                       
+                       ^
+C:\Users\USER\AppData\Loca
+l\Pub\Cache\hosted\pub.dev
+\nearby_connections-4.3.0\
+android\src\main\java\com\
+pkmnapps\nearby_connection
+s\NearbyConnectionsPlugin.
+java:326: warning: 
+[deprecation] 
+getAuthenticationToken() 
+in ConnectionInfo has 
+been deprecated
+			args.put("authenticatio
+nToken", connectionInfo.ge
+tAuthenticationToken());
+			                       
+                       ^
+C:\Users\USER\AppData\Loca
+l\Pub\Cache\hosted\pub.dev
+\nearby_connections-4.3.0\
+android\src\main\java\com\
+pkmnapps\nearby_connection
+s\NearbyConnectionsPlugin.
+java:389: warning: 
+[deprecation] 
+asJavaFile() in com.google
+.android.gms.nearby.connec
+tion.Payload.File has 
+been deprecated
+					args.put("filePath", 
+payload.asFile().asJavaFil
+e().getAbsolutePath());
+					                     
+                ^
+6 warnings
+Running Gradle task 'assembleDebug'...                           1011.5s
+ΓêÜ Built build\app\outputs\flutter-apk\app-debug.apk

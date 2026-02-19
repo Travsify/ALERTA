@@ -152,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: BoxDecoration(
                       color: AppTheme.cardSurface,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white05),
+                      border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
                     child: Column(
                       children: [

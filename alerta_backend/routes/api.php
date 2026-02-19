@@ -72,5 +72,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/password', [ProfileController::class, 'updatePassword']);
         Route::put('/duress-pin', [ProfileController::class, 'updateDuressPin']);
         Route::put('/medical-id', [ProfileController::class, 'updateMedicalId']);
+        Route::post('/fcm-token', [ProfileController::class, 'updateFcmToken']);
     });
 });

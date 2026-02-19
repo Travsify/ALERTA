@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:alerta_mobile/core/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:nearby_connections/nearby_connections.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 
 class MeshService extends ChangeNotifier {
@@ -23,7 +24,7 @@ class MeshService extends ChangeNotifier {
     if (_isDiscovery) return;
     
     try {
-      final bool granted = await Nearby().askLocationPermission();
+      final bool granted = await Permission.location.request().isGranted;
       if (!granted) return;
 
       await Nearby().startDiscovery(

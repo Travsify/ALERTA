@@ -196,6 +196,8 @@ class HomeView extends StatelessWidget {
       ),
     );
   }
+
+  void _showGhostModeDialog(BuildContext context) {
     String selectedMode = 'calculator';
 
     showDialog(

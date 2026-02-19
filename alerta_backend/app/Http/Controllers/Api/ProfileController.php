@@ -21,9 +21,17 @@ class ProfileController extends Controller
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $request->user()->id,
             'phone' => 'sometimes|string|unique:users,phone,' . $request->user()->id,
+            'fcm_token' => 'sometimes|nullable|string',
+            'telegram_chat_id' => 'sometimes|nullable|string',
+            'notify_push' => 'sometimes|boolean',
+            'notify_telegram' => 'sometimes|boolean',
+            'notify_sms' => 'sometimes|boolean',
         ]);
 
-        $request->user()->update($request->only(['name', 'email', 'phone']));
+        $request->user()->update($request->only([
+            'name', 'email', 'phone', 'fcm_token', 'telegram_chat_id', 
+            'notify_push', 'notify_telegram', 'notify_sms'
+        ]));
 
         return response()->json([
             'user' => $request->user()->fresh(),
@@ -35,7 +43,7 @@ class ProfileController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|string|min:4|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         if (!Hash::check($request->current_password, $request->user()->password)) {
@@ -50,6 +58,21 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => 'Password updated successfully',
+        ]);
+    }
+
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $request->user()->update([
+            'fcm_token' => $request->fcm_token,
+        ]);
+
+        return response()->json([
+            'message' => 'FCM token updated successfully',
         ]);
     }
 

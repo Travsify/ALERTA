@@ -3,6 +3,13 @@ import 'package:alerta_mobile/core/services/api_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+class TrustedContact {
+  final String id;
+  final String name;
+  final String phone;
+  final String relationship;
+  final bool receivesSOS;
+  final bool receivesLocation;
   final String? telegramChatId;
   final bool notifyPush;
   final bool notifyTelegram;

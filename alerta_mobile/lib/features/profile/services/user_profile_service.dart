@@ -4,6 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserProfile {
+  final String id;
+  final String name;
+  final String email;
+  final String phone;
+  final bool isVerified;
+  final DateTime? createdAt;
   final String? fcmToken;
   final String? telegramChatId;
   final bool notifyPush;
@@ -11,6 +17,7 @@ class UserProfile {
   final bool notifySms;
 
   UserProfile({
+    required this.id,
     required this.name,
     required this.email,
     required this.phone,
@@ -24,6 +31,7 @@ class UserProfile {
   });
 
   Map<String, dynamic> toJson() => {
+    'id': id,
     'name': name,
     'email': email,
     'phone': phone,
@@ -37,6 +45,7 @@ class UserProfile {
   };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+    id: json['id']?.toString() ?? '',
     name: json['name'] ?? 'User',
     email: json['email'] ?? '',
     phone: json['phone'] ?? '',
@@ -50,6 +59,7 @@ class UserProfile {
   );
 
   UserProfile copyWith({
+    String? id,
     String? name,
     String? email,
     String? phone,
@@ -60,6 +70,7 @@ class UserProfile {
     bool? notifyTelegram,
     bool? notifySms,
   }) => UserProfile(
+    id: id ?? this.id,
     name: name ?? this.name,
     email: email ?? this.email,
     phone: phone ?? this.phone,
@@ -121,6 +132,7 @@ class UserProfileService extends ChangeNotifier {
     required String phone,
   }) async {
     _profile = UserProfile(
+      id: 'local_${DateTime.now().millisecondsSinceEpoch}',
       name: name,
       email: email,
       phone: phone,

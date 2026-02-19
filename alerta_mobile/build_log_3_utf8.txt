@@ -1,0 +1,61 @@
+﻿Running Gradle task 'assembleDebug'...                          
+flutter : 
+At line:1 char:1
++ flutter build apk 
+--debug > build_log_3.txt 
+2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (:  
+  String) [], RemoteExc   
+ eption
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+FAILURE: Build failed 
+with an exception.
+
+* Where:
+Build file 'C:\Users\USER\
+Desktop\Alerta\alerta_mobi
+le\android\app\build.gradl
+e.kts' line: 1
+
+* What went wrong:
+An exception occurred 
+applying plugin request 
+[id: 
+'com.android.application']
+> Failed to apply plugin '
+com.android.internal.versi
+on-check'.
+   > Minimum supported 
+Gradle version is 8.11.1. 
+Current version is 8.9. 
+If using the gradle 
+wrapper, try editing the 
+distributionUrl in C:\User
+s\USER\Desktop\Alerta\aler
+ta_mobile\android\gradle\w
+rapper\gradle-wrapper.prop
+erties to 
+gradle-8.11.1-all.zip
+
+* Try:
+> Run with --stacktrace 
+option to get the stack 
+trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to get 
+full insights.
+> Get more help at 
+https://help.gradle.org.
+
+BUILD FAILED in 53s
+Running Gradle task 'assembleDebug'...                             53.6s
+Gradle task assembleDebug 
+failed with exit code 1

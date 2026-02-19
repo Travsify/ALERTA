@@ -5,13 +5,23 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
+
 class NotificationService
 {
     protected string $telegramToken;
+    protected $messaging;
 
     public function __construct()
     {
         $this->telegramToken = config('services.telegram.bot_token', env('TELEGRAM_BOT_TOKEN'));
+        
+        try {
+            $this->messaging = app('firebase.messaging');
+        } catch (\Exception $e) {
+            Log::warning("Firebase Messaging not initialized: " . $e->getMessage());
+        }
     }
 
     /**
@@ -37,9 +47,34 @@ class NotificationService
 
     protected function sendPush($token, $user, $alert)
     {
-        // Simple FCM placeholder - in production use kreait/laravel-firebase
-        Log::info("Push Notification Sent to {$token} for SOS from {$user->name}");
+        if (!$this->messaging) {
+            Log::info("Push Placeholder (Firebase disabled): SOS from {$user->name}");
+            return;
+        }
+
+        $title = "🚨 EMERGENCY: {$user->name} needs help!";
+        $body = "Type: " . ucfirst($alert->alert_type) . ". Location: {$alert->latitude}, {$alert->longitude}";
+
+        $notification = Notification::create($title, $body);
+        $message = CloudMessage::withTarget('token', $token)
+            ->withNotification($notification)
+            ->withData([
+                'type' => 'emergency',
+                'alert_id' => (string) $alert->id,
+                'user_name' => $user->name,
+                'latitude' => (string) $alert->latitude,
+                'longitude' => (string) $alert->longitude,
+            ])
+            ->withHighestPriority();
+
+        try {
+            $this->messaging->send($message);
+            Log::info("FCM SOS Sent to device token.");
+        } catch (\Exception $e) {
+            Log::error("FCM Send Failed: " . $e->getMessage());
+        }
     }
+// ... rest of file (Telegram part)
 
     protected function sendTelegram($chatId, $user, $alert)
     {

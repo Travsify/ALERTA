@@ -1,3 +1,4 @@
+import 'package:alerta_mobile/core/services/navigation_service.dart';
 import 'package:alerta_mobile/core/theme/app_theme.dart';
 import 'package:alerta_mobile/features/splash/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -5,10 +6,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:alerta_mobile/core/services/notification_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  
+  // Load environment variables
+  await dotenv.load(fileName: ".env");
+
+  // Initialize Firebase (wrapped in try-catch to avoid crash if config is missing)
+  try {
+    await Firebase.initializeApp();
+    await NotificationService().initialize();
+  } catch (e) {
+    debugPrint("Firebase initialization failed: $e");
+  }
+  
   runApp(const ProviderScope(child: AlertaApp()));
 }
 
@@ -18,6 +34,7 @@ class AlertaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        navigatorKey: NavigationService().navigatorKey,
         // Notice that the counter didn't reset back to zero; the application
         // state is not lost during the reload. To reset the state, use hot
         // restart instead.

@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:alerta_mobile/core/services/api_service.dart';
+import 'package:alerta_mobile/features/profile/services/user_profile_service.dart';
 
 class PanicService {
   final Battery _battery = Battery();

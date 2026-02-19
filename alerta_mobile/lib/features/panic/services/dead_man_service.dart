@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:alerta_mobile/core/services/api_service.dart';
 import 'package:alerta_mobile/features/panic/services/panic_service.dart';
 import 'package:flutter/foundation.dart';
 

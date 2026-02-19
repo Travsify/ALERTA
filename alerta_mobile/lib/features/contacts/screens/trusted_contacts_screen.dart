@@ -127,7 +127,7 @@ class _TrustedContactsScreenState extends State<TrustedContactsScreen> {
             if (existing != null)
               TextButton(
                 onPressed: () {
-                  _service.deleteContact(existing.id);
+                  _service.deleteContact(existing!.id);
                   Navigator.pop(context);
                 },
                 child: const Text('DELETE', style: TextStyle(color: Colors.red)),

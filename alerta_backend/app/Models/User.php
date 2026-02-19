@@ -26,6 +26,11 @@ class User extends Authenticatable implements FilamentUser
         'is_active',
         'is_suspended',
         'is_admin',
+        'fcm_token',
+        'telegram_chat_id',
+        'notify_push',
+        'notify_telegram',
+        'notify_sms',
     ];
 
     protected $hidden = [
@@ -41,6 +46,9 @@ class User extends Authenticatable implements FilamentUser
         'is_active' => 'boolean',
         'is_suspended' => 'boolean',
         'is_admin' => 'boolean',
+        'notify_push' => 'boolean',
+        'notify_telegram' => 'boolean',
+        'notify_sms' => 'boolean',
     ];
 
     // Relationships

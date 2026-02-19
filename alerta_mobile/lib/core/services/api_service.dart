@@ -1,3 +1,6 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:alerta_mobile/core/services/navigation_service.dart';
+import 'package:alerta_mobile/features/auth/screens/login_screen.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -10,8 +13,8 @@ class ApiService {
 
   final _storage = const FlutterSecureStorage();
   
-  // Base URL for the Alerta Backend (Production)
-  static const String baseUrl = 'https://alerta-backend.onrender.com/api';
+  // Base URL loaded from environment variables
+  static String get baseUrl => dotenv.env['API_BASE_URL'] ?? 'https://alerta-backend.onrender.com/api';
 
   Future<Map<String, String>> _getHeaders() async {
     final token = await _storage.read(key: 'auth_token');
@@ -84,7 +87,9 @@ class ApiService {
     if (response.statusCode == 401) {
       debugPrint('Unauthorized: Clearing token and logging out');
       _storage.delete(key: 'auth_token');
-      // In a real app, you would also trigger a navigation to the login screen
+      
+      // Trigger global navigation to login
+      NavigationService().pushAndRemoveUntil(const LoginScreen());
     }
   }
 }
