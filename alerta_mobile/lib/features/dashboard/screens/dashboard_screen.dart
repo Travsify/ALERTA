@@ -496,26 +496,27 @@ class _FeatureCard extends StatelessWidget {
       label: '$title. $subtitle',
       button: true,
       child: Material(
-      color: AppTheme.cardSurface,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
+        color: AppTheme.cardSurface,
         borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: color.withOpacity(0.1),
-                child: FaIcon(icon, color: color, size: 20),
-              ),
-              const SizedBox(height: 16),
-              Text(title, style: AppTypography.labelLarge.copyWith(color: Colors.white, letterSpacing: 0)),
-              const SizedBox(height: 4),
-              Text(subtitle, style: AppTypography.bodySmall.copyWith(fontSize: 11, color: Colors.white38)),
-            ],
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: color.withOpacity(0.1),
+                  child: FaIcon(icon, color: color, size: 20),
+                ),
+                const SizedBox(height: 16),
+                Text(title, style: AppTypography.labelLarge.copyWith(color: Colors.white, letterSpacing: 0)),
+                const SizedBox(height: 4),
+                Text(subtitle, style: AppTypography.bodySmall.copyWith(fontSize: 11, color: Colors.white38)),
+              ],
+            ),
           ),
         ),
       ),
