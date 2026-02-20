@@ -28,7 +28,7 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
-# Copy existing application directory permissions
+RUN composer update --no-interaction --optimize-autoloader --no-dev
 COPY --chown=www-data:www-data . /var/www
 
 # Create a custom Nginx configuration
