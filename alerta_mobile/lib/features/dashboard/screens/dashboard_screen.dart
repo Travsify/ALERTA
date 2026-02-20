@@ -1,5 +1,26 @@
-import 'package:alerta_mobile/core/services/connectivity_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:alerta_mobile/core/theme/app_theme.dart';
 import 'package:alerta_mobile/core/theme/typography.dart';
+import 'package:alerta_mobile/core/services/connectivity_service.dart';
+import 'package:alerta_mobile/features/panic/services/panic_service.dart';
+import 'package:alerta_mobile/features/threat_radar/services/threat_radar_service.dart';
+import 'package:alerta_mobile/features/subscription/services/subscription_service.dart';
+import 'package:alerta_mobile/features/profile/services/user_profile_service.dart';
+import 'package:alerta_mobile/features/subscription/screens/subscription_screen.dart';
+import 'package:alerta_mobile/features/profile/screens/profile_screen.dart';
+import 'package:alerta_mobile/features/prevention/screens/transport_vetting_screen.dart';
+import 'package:alerta_mobile/features/prevention/screens/blackbox_screen.dart';
+import 'package:alerta_mobile/features/guardian/screens/guardian_mode_screen.dart';
+import 'package:alerta_mobile/features/fake_call/screens/fake_call_screen.dart';
+import 'package:alerta_mobile/features/live_location/screens/share_trip_screen.dart';
+import 'package:alerta_mobile/features/contacts/screens/trusted_contacts_screen.dart';
+import 'package:alerta_mobile/features/prevention/screens/safety_map_screen.dart';
+import 'package:alerta_mobile/features/recovery/screens/crisis_log_screen.dart';
+import 'package:alerta_mobile/features/panic/services/dead_man_service.dart';
+import 'package:alerta_mobile/features/panic/services/shake_to_panic_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -157,7 +178,7 @@ class HomeView extends StatelessWidget {
             children: [
               const Icon(FontAwesomeIcons.clock, size: 48, color: Colors.redAccent),
               const SizedBox(height: 16),
-              const Text(
+               Text(
                 'If you don\'t check in before the timer expires, an automated SOS will be sent to your contacts.',
                  textAlign: TextAlign.center,
                  style: AppTypography.bodyMedium,
@@ -395,7 +416,7 @@ class HomeView extends StatelessWidget {
                 ),
               ),
             ),
-            ), // end Semantics
+          ),
 
             const SizedBox(height: 32),
             Text('Prevention Tools', style: AppTypography.labelLarge.copyWith(color: Colors.white54)),

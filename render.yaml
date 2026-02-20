@@ -3,6 +3,8 @@ services:
   - type: web
     name: alerta-backend
     env: docker
+    dockerContext: alerta_backend
+    dockerfilePath: alerta_backend/Dockerfile
     plan: free # Change to starter for better performance
     region: ohio
     envVars:

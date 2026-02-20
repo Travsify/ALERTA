@@ -1,4 +1,5 @@
 import 'package:alerta_mobile/core/theme/app_theme.dart';
+import 'package:alerta_mobile/core/theme/typography.dart';
 import 'package:alerta_mobile/core/utils/biometric_helper.dart';
 import 'package:alerta_mobile/features/auth/screens/register_screen.dart';
 import 'package:alerta_mobile/features/auth/services/auth_service.dart';

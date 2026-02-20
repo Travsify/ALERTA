@@ -1,4 +1,5 @@
 import 'package:alerta_mobile/core/theme/app_theme.dart';
+import 'package:alerta_mobile/core/theme/typography.dart';
 import 'package:alerta_mobile/features/auth/services/auth_service.dart';
 import 'package:alerta_mobile/features/dashboard/screens/dashboard_screen.dart';
 import 'package:alerta_mobile/features/profile/services/user_profile_service.dart';

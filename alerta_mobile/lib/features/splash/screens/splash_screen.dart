@@ -1,5 +1,5 @@
 import 'package:alerta_mobile/core/theme/app_theme.dart';
-import 'package:alerta_mobile/features/onboarding/screens/onboarding_screen.dart';
+import 'package:alerta_mobile/features/auth/screens/login_screen.dart';
 import 'package:alerta_mobile/features/dashboard/screens/dashboard_screen.dart';
 import 'package:alerta_mobile/features/subscription/services/subscription_service.dart';
 import 'package:alerta_mobile/features/profile/services/user_profile_service.dart';
@@ -58,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } else if (isLoggedIn) {
         nextScreen = const DashboardScreen();
       } else {
-        nextScreen = const OnboardingScreen();
+        nextScreen = const LoginScreen();
       }
 
       // Remove native splash just before showing the new screen
@@ -72,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
       FlutterNativeSplash.remove();
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       }
     }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:alerta_mobile/core/theme/app_theme.dart';
+import 'package:alerta_mobile/core/theme/typography.dart';
 import 'package:alerta_mobile/features/threat_radar/services/threat_report_store.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
