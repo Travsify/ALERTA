@@ -28,7 +28,7 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
-RUN composer update --no-interaction --optimize-autoloader --no-dev
+RUN composer update --no-interaction --optimize-autoloader --no-dev && rm -f .env
 COPY --chown=www-data:www-data . /var/www
 
 # Create a custom Nginx configuration
@@ -49,6 +49,7 @@ RUN echo "server { \
 
 # Create startup script
 RUN echo "#!/bin/sh\n\
+    rm -f /var/www/.env\n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\
