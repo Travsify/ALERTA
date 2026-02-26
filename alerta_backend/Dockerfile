@@ -28,12 +28,14 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
-RUN composer update --no-interaction --optimize-autoloader --no-dev && rm -f .env
-COPY --chown=www-data:www-data . /var/www
+# Install dependencies and set permissions
+RUN composer install --no-interaction --optimize-autoloader --no-dev \
+    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Create a custom Nginx configuration
 RUN echo "server { \
-    listen 80; \
+    listen \${PORT:-80}; \
     index index.php index.html; \
     root /var/www/public; \
     location / { \
@@ -49,15 +51,15 @@ RUN echo "server { \
 
 # Create startup script
 RUN echo "#!/bin/sh\n\
-    rm -f /var/www/.env\n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\
+    # Wait for DB or handle migrations\n\
     php artisan migrate --force\n\
     nginx\n\
     php-fpm" > /start.sh && chmod +x /start.sh
 
-# Expose port 80
+# Expose port (Render ignores this but good for local)
 EXPOSE 80
 
 # Run the startup script
