@@ -116,6 +116,9 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
+            UserResource\RelationManagers\MedicalIdRelationManager::class,
+            UserResource\RelationManagers\TrustedContactsRelationManager::class,
+            UserResource\RelationManagers\PanicAlertsRelationManager::class,
             UserResource\RelationManagers\SafetyTimelineRelationManager::class,
         ];
     }
