@@ -29,6 +29,9 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
+# Delete any local .env file that might have been copied (to prevent configuration clashes)
+RUN rm -f /var/www/.env
+
 # Install dependencies and set permissions
 RUN composer install --no-interaction --optimize-autoloader --no-dev \
     && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
