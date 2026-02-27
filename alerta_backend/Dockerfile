@@ -62,33 +62,37 @@ RUN echo "#!/bin/sh\n\
     mv /etc/nginx/sites-available/default.template /etc/nginx/sites-available/default\n\
     \n\
     # FORCE environment visibility in PHP-FPM\n\
-    # We write to the specific pool config to be 100% sure\n\
     echo \"[www]\" > /usr/local/etc/php-fpm.d/env.conf\n\
     echo \"clear_env = no\" >> /usr/local/etc/php-fpm.d/env.conf\n\
     echo \"variables_order = \\\"EGPCS\\\"\" > /usr/local/etc/php/conf.d/env.ini\n\
     \n\
-    # Generate a clean .env file from environment variables\n\
-    env | grep -E '^(APP_|DB_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_)' > /var/www/.env\n\
+    # RAW SANITIZATION of APP_KEY (Bypass all shell/UI quote issues)\n\
+    # We use PHP one-liner to ensure we don't load the framework yet\n\
+    export APP_KEY_CLEAN=\$(php -r \"echo trim(str_replace(['\\\"', '\\''], '', env('APP_KEY') ?: ''));\")\n\
     \n\
-    # Handle APP_KEY\n\
-    if [ -z \"\$APP_KEY\" ]; then\n\
-    echo \"WARNING: APP_KEY not found in environment. Generating...\"\n\
-    php artisan key:generate --no-interaction --force\n\
+    # If key is missing or not 51 chars (base64: prefix + 44 chars)\n\
+    if [ \${#APP_KEY_CLEAN} -ne 51 ]; then\n\
+    echo \"WARNING: APP_KEY invalid or missing. Generating fresh 32-byte key...\"\n\
+    export APP_KEY_CLEAN=\$(php -r \"echo 'base64:' . base64_encode(random_bytes(32));\")\n\
     fi\n\
     \n\
-    # CRITICAL: Fix permissions for the generated .env so PHP-FPM can read it\n\
+    export APP_KEY=\"\$APP_KEY_CLEAN\"\n\
+    \n\
+    # Build clean .env\n\
+    env | grep -E '^(APP_|DB_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_)' > /var/www/.env\n\
+    echo \"APP_KEY=\$APP_KEY\" >> /var/www/.env\n\
+    echo \"APP_DEBUG=true\" >> /var/www/.env\n\
+    \n\
+    # CRITICAL: Fix permissions so worker can read the new config\n\
     chown www-data:www-data /var/www/.env\n\
     chmod 644 /var/www/.env\n\
-    \n\
-    # Ensure storage permissions are correct\n\
     chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache\n\
     chmod -R 775 /var/www/storage /var/www/bootstrap/cache\n\
     \n\
-    # Diagnostic: Check if key is valid\n\
-    KEY_VAL=\$(grep \"APP_KEY\" /var/www/.env | cut -d'=' -f2)\n\
-    echo \"Starting Alerta Backend... Key Type: \${KEY_VAL%%:*}, Length: \${#KEY_VAL}\"\n\
+    # Diagnostic Pulse\n\
+    echo \"Starting Alerta Backend... Key Type: \${APP_KEY%%:*} detected.\"\n\
     \n\
-    # Clear all caches to ensure fresh config\n\
+    # Standard Laravel boot sequence\n\
     php artisan config:clear\n\
     php artisan route:clear\n\
     php artisan view:clear\n\
