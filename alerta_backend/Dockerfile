@@ -53,30 +53,35 @@ RUN echo "server { \
 # Create startup script
 RUN echo "#!/bin/sh\n\
     # Set dynamic port for Nginx\n\
-    sed -i \"s/listen 80;/listen \${PORT:-80};/g\" /etc/nginx/sites-available/default.template\n\
+    if [ ! -z \"\$PORT\" ]; then\n\
+    sed -i \"s/listen 80;/listen \$PORT;/g\" /etc/nginx/sites-available/default.template\n\
+    fi\n\
     mv /etc/nginx/sites-available/default.template /etc/nginx/sites-available/default\n\
     \n\
-    # FORCE environment inheritance in PHP-FPM\n\
-    if [ -f /usr/local/etc/php-fpm.d/www.conf ]; then\n\
+    # FORCE environment visibility in PHP-FPM\n\
     echo \"clear_env = no\" >> /usr/local/etc/php-fpm.d/www.conf\n\
-    fi\n\
+    echo \"variables_order = \\\"EGPCS\\\"\" > /usr/local/etc/php/conf.d/env.ini\n\
     \n\
-    # Sanitize and Check APP_KEY\n\
-    export APP_KEY=\$(echo \$APP_KEY | sed 's/\"//g' | sed \"s/'//g\")\n\
+    # Create or update .env from current environment vars (very reliable for Laravel)\n\
+    # We exclude sensitive internal vars and ones with spaces\n\
+    printenv | grep -E '^(APP_|DB_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_)' > /var/www/.env\n\
     \n\
-    if [ -z \"\$APP_KEY\" ] || [ \${#APP_KEY} -lt 16 ]; then\n\
+    # Sanitize and Check APP_KEY from environment\n\
+    CLEAN_KEY=\$(echo \$APP_KEY | sed 's/\"//g' | sed \"s/'//g\")\n\
+    if [ -z \"\$CLEAN_KEY\" ] || [ \${#CLEAN_KEY} -lt 16 ]; then\n\
     echo \"WARNING: APP_KEY missing or invalid. Generating temporary key...\"\n\
-    export APP_KEY=\$(php artisan key:generate --show --no-interaction)\n\
+    CLEAN_KEY=\$(php artisan key:generate --show --no-interaction)\n\
+    echo \"APP_KEY=\$CLEAN_KEY\" >> /var/www/.env\n\
+    export APP_KEY=\$CLEAN_KEY\n\
     fi\n\
     \n\
-    # Force debug mode to see exact issues\n\
-    export APP_DEBUG=true\n\
+    # Diagnostic\n\
+    echo \"Booting Alerta... Key length: \${#APP_KEY} characters.\"\n\
     \n\
-    # Standard Laravel boot sequence\n\
+    # Standard Laravel boot sequence (no cache to be safe during debugging)\n\
     php artisan config:clear\n\
-    php artisan config:cache\n\
-    php artisan route:cache\n\
-    php artisan view:cache\n\
+    php artisan route:clear\n\
+    php artisan view:clear\n\
     php artisan migrate --force\n\
     \n\
     # Start Nginx and PHP-FPM\n\
