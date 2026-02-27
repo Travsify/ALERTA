@@ -19,7 +19,7 @@ class LatestPanicAlerts extends BaseWidget
         return $table
             ->query(
                 PanicAlertResource::getEloquentQuery()
-                    ->where('status', 'pending')
+                    ->where('status', 'active')
                     ->latest()
                     ->limit(5)
             )

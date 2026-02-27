@@ -54,6 +54,12 @@ RUN echo "server { \
 RUN echo "#!/bin/sh\n\
     sed -i \"s/listen 80;/listen \${PORT:-80};/g\" /etc/nginx/sites-available/default.template\n\
     mv /etc/nginx/sites-available/default.template /etc/nginx/sites-available/default\n\
+    \n\
+    if [ -z \"\$APP_KEY\" ]; then\n\
+    echo \"WARNING: APP_KEY is not set. Generating a temporary key for this session...\"\n\
+    export APP_KEY=\$(php artisan key:generate --show --no-interaction)\n\
+    fi\n\
+    \n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\

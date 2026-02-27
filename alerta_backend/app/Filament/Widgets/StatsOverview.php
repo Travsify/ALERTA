@@ -16,7 +16,7 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Active Panic Alerts', PanicAlert::where('status', 'pending')->count())
+            Stat::make('Active Panic Alerts', PanicAlert::where('status', 'active')->count())
                 ->description('Current unresolved alerts')
                 ->descriptionIcon('heroicon-m-fire', IconPosition::Before)
                 ->color('danger')
