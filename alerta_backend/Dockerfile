@@ -34,9 +34,9 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev \
     && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Create a custom Nginx configuration
+# Create a custom Nginx configuration template
 RUN echo "server { \
-    listen \${PORT:-80}; \
+    listen 80; \
     index index.php index.html; \
     root /var/www/public; \
     location / { \
@@ -48,10 +48,12 @@ RUN echo "server { \
     fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name; \
     include fastcgi_params; \
     } \
-    }" > /etc/nginx/sites-available/default
+    }" > /etc/nginx/sites-available/default.template
 
 # Create startup script
 RUN echo "#!/bin/sh\n\
+    sed -i \"s/listen 80;/listen \${PORT:-80};/g\" /etc/nginx/sites-available/default.template\n\
+    mv /etc/nginx/sites-available/default.template /etc/nginx/sites-available/default\n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\
