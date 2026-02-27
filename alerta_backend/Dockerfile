@@ -56,17 +56,16 @@ RUN echo "#!/bin/sh\n\
     sed -i \"s/listen 80;/listen \${PORT:-80};/g\" /etc/nginx/sites-available/default.template\n\
     mv /etc/nginx/sites-available/default.template /etc/nginx/sites-available/default\n\
     \n\
-    # Disable clear_env so PHP-FPM sees Render environment variables (APP_KEY, DB_*, etc.)\n\
+    # FORCE environment inheritance in PHP-FPM\n\
     if [ -f /usr/local/etc/php-fpm.d/www.conf ]; then\n\
-    sed -i 's/;clear_env = no/clear_env = no/g' /usr/local/etc/php-fpm.d/www.conf\n\
+    echo \"clear_env = no\" >> /usr/local/etc/php-fpm.d/www.conf\n\
     fi\n\
     \n\
-    if [ -z \"\$APP_KEY\" ]; then\n\
-    echo \"WARNING: APP_KEY is not set. Generating a temporary key...\"\n\
-    export APP_KEY=\$(php artisan key:generate --show --no-interaction)\n\
-    fi\n\
+    # Force debug mode to see the actual error if this fails\n\
+    export APP_DEBUG=true\n\
     \n\
     # Standard Laravel boot sequence\n\
+    php artisan config:clear\n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\
