@@ -61,7 +61,15 @@ RUN echo "#!/bin/sh\n\
     echo \"clear_env = no\" >> /usr/local/etc/php-fpm.d/www.conf\n\
     fi\n\
     \n\
-    # Force debug mode to see the actual error if this fails\n\
+    # Sanitize and Check APP_KEY\n\
+    export APP_KEY=\$(echo \$APP_KEY | sed 's/\"//g' | sed \"s/'//g\")\n\
+    \n\
+    if [ -z \"\$APP_KEY\" ] || [ \${#APP_KEY} -lt 16 ]; then\n\
+    echo \"WARNING: APP_KEY missing or invalid. Generating temporary key...\"\n\
+    export APP_KEY=\$(php artisan key:generate --show --no-interaction)\n\
+    fi\n\
+    \n\
+    # Force debug mode to see exact issues\n\
     export APP_DEBUG=true\n\
     \n\
     # Standard Laravel boot sequence\n\
@@ -72,6 +80,7 @@ RUN echo "#!/bin/sh\n\
     php artisan migrate --force\n\
     \n\
     # Start Nginx and PHP-FPM\n\
+    echo \"Starting Nginx and PHP-FPM...\"\n\
     nginx\n\
     php-fpm" > /start.sh && chmod +x /start.sh
 
