@@ -57,7 +57,15 @@ RUN echo "#!/bin/sh\n\
     \n\
     if [ -z \"\$APP_KEY\" ]; then\n\
     echo \"WARNING: APP_KEY is not set. Generating a temporary key for this session...\"\n\
-    export APP_KEY=\$(php artisan key:generate --show --no-interaction)\n\
+    # Generate a key and capture ONLY the base64 part if it's not already in the correct format\n\
+    TEMP_KEY=\$(php artisan key:generate --show --no-interaction)\n\
+    export APP_KEY=\$TEMP_KEY\n\
+    fi\n\
+    \n\
+    # Ensure PHP-FPM sees the APP_KEY even if it clears its environment\n\
+    # We can append it to the fpm pool config if it exists\n\
+    if [ -f /usr/local/etc/php-fpm.d/www.conf ]; then\n\
+    echo \"env[APP_KEY] = '\$APP_KEY'\" >> /usr/local/etc/php-fpm.d/www.conf\n\
     fi\n\
     \n\
     php artisan config:cache\n\
