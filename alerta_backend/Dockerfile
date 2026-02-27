@@ -52,27 +52,27 @@ RUN echo "server { \
 
 # Create startup script
 RUN echo "#!/bin/sh\n\
+    # Set dynamic port for Nginx\n\
     sed -i \"s/listen 80;/listen \${PORT:-80};/g\" /etc/nginx/sites-available/default.template\n\
     mv /etc/nginx/sites-available/default.template /etc/nginx/sites-available/default\n\
     \n\
-    if [ -z \"\$APP_KEY\" ]; then\n\
-    echo \"WARNING: APP_KEY is not set. Generating a temporary key for this session...\"\n\
-    # Generate a key and capture ONLY the base64 part if it's not already in the correct format\n\
-    TEMP_KEY=\$(php artisan key:generate --show --no-interaction)\n\
-    export APP_KEY=\$TEMP_KEY\n\
-    fi\n\
-    \n\
-    # Ensure PHP-FPM sees the APP_KEY even if it clears its environment\n\
-    # We can append it to the fpm pool config if it exists\n\
+    # Disable clear_env so PHP-FPM sees Render environment variables (APP_KEY, DB_*, etc.)\n\
     if [ -f /usr/local/etc/php-fpm.d/www.conf ]; then\n\
-    echo \"env[APP_KEY] = '\$APP_KEY'\" >> /usr/local/etc/php-fpm.d/www.conf\n\
+    sed -i 's/;clear_env = no/clear_env = no/g' /usr/local/etc/php-fpm.d/www.conf\n\
     fi\n\
     \n\
+    if [ -z \"\$APP_KEY\" ]; then\n\
+    echo \"WARNING: APP_KEY is not set. Generating a temporary key...\"\n\
+    export APP_KEY=\$(php artisan key:generate --show --no-interaction)\n\
+    fi\n\
+    \n\
+    # Standard Laravel boot sequence\n\
     php artisan config:cache\n\
     php artisan route:cache\n\
     php artisan view:cache\n\
-    # Wait for DB or handle migrations\n\
     php artisan migrate --force\n\
+    \n\
+    # Start Nginx and PHP-FPM\n\
     nginx\n\
     php-fpm" > /start.sh && chmod +x /start.sh
 
