@@ -62,30 +62,33 @@ RUN echo "#!/bin/sh\n\
     echo \"clear_env = no\" >> /usr/local/etc/php-fpm.d/www.conf\n\
     echo \"variables_order = \\\"EGPCS\\\"\" > /usr/local/etc/php/conf.d/env.ini\n\
     \n\
-    # Create or update .env from current environment vars (very reliable for Laravel)\n\
-    # We exclude sensitive internal vars and ones with spaces\n\
-    printenv | grep -E '^(APP_|DB_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_)' > /var/www/.env\n\
+    # Generate a clean .env file from environment variables\n\
+    # This is often more reliable than relying on auto-detection\n\
+    env | grep -E '^(APP_|DB_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_)' > /var/www/.env\n\
     \n\
-    # Sanitize and Check APP_KEY from environment\n\
-    CLEAN_KEY=\$(echo \$APP_KEY | sed 's/\"//g' | sed \"s/'//g\")\n\
-    if [ -z \"\$CLEAN_KEY\" ] || [ \${#CLEAN_KEY} -lt 16 ]; then\n\
-    echo \"WARNING: APP_KEY missing or invalid. Generating temporary key...\"\n\
-    CLEAN_KEY=\$(php artisan key:generate --show --no-interaction)\n\
-    echo \"APP_KEY=\$CLEAN_KEY\" >> /var/www/.env\n\
-    export APP_KEY=\$CLEAN_KEY\n\
+    # Ensure APP_DEBUG is true so we can see errors\n\
+    echo \"APP_DEBUG=true\" >> /var/www/.env\n\
+    \n\
+    # Handle APP_KEY specifically\n\
+    if [ -z \"\$APP_KEY\" ]; then\n\
+    echo \"WARNING: APP_KEY not found in environment. Generating...\"\n\
+    php artisan key:generate --no-interaction --force\n\
     fi\n\
     \n\
-    # Diagnostic\n\
-    echo \"Booting Alerta... Key length: \${#APP_KEY} characters.\"\n\
+    # Ensure permissions are correct\n\
+    chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache\n\
+    chmod -R 775 /var/www/storage /var/www/bootstrap/cache\n\
     \n\
-    # Standard Laravel boot sequence (no cache to be safe during debugging)\n\
+    # Diagnostic\n\
+    echo \"Starting Alerta Backend...\"\n\
+    \n\
+    # Standard Laravel boot sequence\n\
     php artisan config:clear\n\
     php artisan route:clear\n\
     php artisan view:clear\n\
     php artisan migrate --force\n\
     \n\
     # Start Nginx and PHP-FPM\n\
-    echo \"Starting Nginx and PHP-FPM...\"\n\
     nginx\n\
     php-fpm" > /start.sh && chmod +x /start.sh
 
