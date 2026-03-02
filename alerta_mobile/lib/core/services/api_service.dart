@@ -33,7 +33,7 @@ class ApiService {
       _handleUnauthorized(response);
       return response;
     } catch (e) {
-      debugPrint('API GET Error: $e');
+      // debugPrint('API GET Error: $e');
       throw Exception('Network Error');
     }
   }
@@ -49,7 +49,7 @@ class ApiService {
       _handleUnauthorized(response);
       return response;
     } catch (e) {
-      debugPrint('API POST Error: $e');
+      // debugPrint('API POST Error: $e');
       throw Exception('Network Error');
     }
   }
@@ -85,7 +85,7 @@ class ApiService {
 
   void _handleUnauthorized(http.Response response) {
     if (response.statusCode == 401) {
-      debugPrint('Unauthorized: Clearing token and logging out');
+      // debugPrint('Unauthorized: Clearing token and logging out');
       _storage.delete(key: 'auth_token');
       
       // Trigger global navigation to login

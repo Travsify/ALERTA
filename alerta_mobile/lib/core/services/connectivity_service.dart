@@ -27,7 +27,7 @@ class ConnectivityService extends ChangeNotifier {
     if (_isOffline != currentlyOffline) {
       _isOffline = currentlyOffline;
       notifyListeners();
-      debugPrint("📡 CONNECTIVITY: Device is ${_isOffline ? 'OFFLINE' : 'ONLINE'}");
+      // debugPrint("📡 CONNECTIVITY: Device is ${_isOffline ? 'OFFLINE' : 'ONLINE'}");
     }
   }
 }

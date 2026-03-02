@@ -1,5 +1,5 @@
-# Use PHP 8.2 with Apache
-FROM php:8.2-apache
+# Use PHP 8.2 with FPM
+FROM php:8.2-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libpq-dev \
+    nginx \
     && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd intl zip
 
 # Clear cache
@@ -25,36 +26,36 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copy project files from the alerta_backend directory
-# We assume the Dockerfile is in the root of the repo, and the laravel app is in alerta_backend/
 COPY alerta_backend/ .
 
 # Install dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN composer install --no-interaction --optimize-autoloader --no-dev \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Create Nginx configuration template for the public folder
+RUN echo 'server { \
+    listen 80; \
+    index index.php index.html; \
+    root /var/www/html/public; \
+    location / { \
+    try_files $uri $uri/ /index.php?$query_string; \
+    } \
+    location ~ \.php$ { \
+    fastcgi_pass 127.0.0.1:9000; \
+    fastcgi_index index.php; \
+    fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name; \
+    include fastcgi_params; \
+    } \
+    }' > /etc/nginx/sites-available/default.template
 
-# Configure Apache DocumentRoot to point to public folder
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
-
-# Configure Apache to listen on Render's PORT manually if needed, 
-# although Render often handles external mapping, commonly we need to bind to $PORT
-# Modify ports.conf to listen on ${PORT} instead of 80
-RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
-RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/' /etc/apache2/sites-available/000-default.conf
-
-# We create a start script to handle port substitution at runtime if env var replacement doesn't happen in config automatically by apache
-# Check if we need to do anything special here. Apache env vars should work in config if configured correctly.
-# But "Listen ${PORT}" directive might not work directly in all apache versions without Defining it.
-# A simpler way for Render is often:
-
+# Copy the resilient start script (using the one from alerta_backend to root context if needed, but we'll use a modified root one)
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+# Fix Windows line endings if necessary
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh
+
+EXPOSE 80
+
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
