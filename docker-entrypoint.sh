@@ -31,12 +31,22 @@ export LOG_CHANNEL=stderr
 echo "Checking Captured Variables..."
 grep -E '^(DB_|DATABASE_|APP_DEBUG)' /var/www/html/.env | cut -d= -f1
 
-# 5. Handle APP_KEY - generate if missing or invalid
-KEY_LEN=${#APP_KEY}
-echo "Current APP_KEY length: $KEY_LEN"
+# 6. Handle APP_KEY - MUST start with "base64:" for Laravel
+# Render's generateValue produces a random string WITHOUT the base64: prefix,
+# which causes Laravel's encrypter to fail silently with a 500 error.
+echo "Current APP_KEY value starts with: ${APP_KEY:0:7}"
 
-if [ "$KEY_LEN" -lt 40 ] 2>/dev/null; then
-    echo "WARNING: APP_KEY is missing or too short ($KEY_LEN chars). Generating a new one..."
+NEEDS_NEW_KEY=false
+if [ -z "$APP_KEY" ]; then
+    echo "WARNING: APP_KEY is empty."
+    NEEDS_NEW_KEY=true
+elif echo "$APP_KEY" | grep -qv "^base64:"; then
+    echo "WARNING: APP_KEY does not start with 'base64:' — invalid for Laravel."
+    NEEDS_NEW_KEY=true
+fi
+
+if [ "$NEEDS_NEW_KEY" = "true" ]; then
+    echo "Generating a proper Laravel APP_KEY..."
     NEW_KEY=$(php -r "echo 'base64:' . base64_encode(random_bytes(32));")
     export APP_KEY="$NEW_KEY"
     # Remove any existing APP_KEY line and add the new one
