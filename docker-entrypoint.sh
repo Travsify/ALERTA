@@ -18,9 +18,16 @@ echo 'variables_order = "EGPCS"' > /usr/local/etc/php/conf.d/env.ini
 
 # 3. Build .env file from environment variables
 # This ensures Laravel always has access to the correct configuration at runtime
-env | grep -E '^(APP_|DB_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_|REDIS_|QUEUE_|SENTRY_|FIREBASE_|TELEGRAM_)' > /var/www/html/.env 2>/dev/null || true
+# We exclude APP_DEBUG from the initial grep so we can override it below
+env | grep -E '^(APP_|DB_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_|REDIS_|QUEUE_|SENTRY_|FIREBASE_|TELEGRAM_)' | grep -v '^APP_DEBUG=' > /var/www/html/.env 2>/dev/null || true
 
-# 4. Handle APP_KEY - generate if missing or invalid
+# 4. Mandatory Environment Overrides for Debugging & Render
+echo "APP_DEBUG=true" >> /var/www/html/.env
+echo "LOG_CHANNEL=stderr" >> /var/www/html/.env
+export APP_DEBUG=true
+export LOG_CHANNEL=stderr
+
+# 5. Handle APP_KEY - generate if missing or invalid
 KEY_LEN=${#APP_KEY}
 echo "Current APP_KEY length: $KEY_LEN"
 
@@ -35,16 +42,17 @@ if [ "$KEY_LEN" -lt 40 ] 2>/dev/null; then
     echo "Generated new APP_KEY: ${NEW_KEY:0:15}... (length: ${#NEW_KEY})"
 fi
 
-# 5. Fix permissions so PHP-FPM (www-data) can read everything
+# 6. Fix permissions so PHP-FPM (www-data) can read everything
 chown www-data:www-data /var/www/html/.env
 chmod 644 /var/www/html/.env
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 6. Laravel boot sequence (no caching to avoid stale config)
+# 7. Laravel boot sequence (no caching to avoid stale config)
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
+php artisan filament:upgrade --ansi
 php artisan migrate --force || echo "Migration failed but continuing..."
 
 echo "=== Starting Nginx + PHP-FPM ==="
