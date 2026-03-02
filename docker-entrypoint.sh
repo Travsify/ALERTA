@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
+set -x
 
-echo "=== Alerta Backend Startup (Resilient) ==="
+echo "=== Alerta Backend Startup (Resilient Debug) ==="
 
 # 1. Set dynamic port for Nginx
 if [ ! -z "$PORT" ]; then
@@ -17,15 +18,18 @@ EOF
 echo 'variables_order = "EGPCS"' > /usr/local/etc/php/conf.d/env.ini
 
 # 3. Build .env file from environment variables
-# This ensures Laravel always has access to the correct configuration at runtime
-# We exclude APP_DEBUG from the initial grep so we can override it below
-env | grep -E '^(APP_|DB_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_|REDIS_|QUEUE_|SENTRY_|FIREBASE_|TELEGRAM_)' | grep -v '^APP_DEBUG=' > /var/www/html/.env 2>/dev/null || true
+# Critical: Include DATABASE_URL and other Render-specific vars
+env | grep -E '^(APP_|DB_|DATABASE_|MAIL_|SESSION_|CACHE_|PAYSTACK_|FILAMENT_|LOG_|REDIS_|QUEUE_|SENTRY_|FIREBASE_|TELEGRAM_)' | grep -v '^APP_DEBUG=' > /var/www/html/.env 2>/dev/null || true
 
 # 4. Mandatory Environment Overrides for Debugging & Render
 echo "APP_DEBUG=true" >> /var/www/html/.env
 echo "LOG_CHANNEL=stderr" >> /var/www/html/.env
 export APP_DEBUG=true
 export LOG_CHANNEL=stderr
+
+# 5. Diagnostic: Check if we can see the vars
+echo "Checking Captured Variables..."
+grep -E '^(DB_|DATABASE_|APP_DEBUG)' /var/www/html/.env | cut -d= -f1
 
 # 5. Handle APP_KEY - generate if missing or invalid
 KEY_LEN=${#APP_KEY}
