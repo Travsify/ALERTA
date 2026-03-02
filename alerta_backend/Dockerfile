@@ -53,8 +53,8 @@ RUN echo 'server { \
     } \
     }' > /etc/nginx/sites-available/default.template
 
-# Make startup script executable
-RUN chmod +x /var/www/start.sh
+# Fix Windows line endings (CRLF -> LF) and make startup script executable
+RUN sed -i 's/\r$//' /var/www/start.sh && chmod +x /var/www/start.sh
 
 EXPOSE 80
 
