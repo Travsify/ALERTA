@@ -1,4 +1,5 @@
 <?php
+die("AUTO_DEPLOY_TEST_LIVE");
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
