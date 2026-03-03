@@ -38,6 +38,9 @@ RUN echo 'server { \
     listen 80; \
     index index.php index.html; \
     root /var/www/html/public; \
+    location /test-debug { \
+    return 200 "NGINX_IS_ALIVE_ROOT_IS_PUBLIC"; \
+    } \
     location / { \
     try_files $uri $uri/ /index.php?$query_string; \
     } \
@@ -56,6 +59,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Fix Windows line endings if necessary
 RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh
 
+# Triggering fresh build trace: bc80d0b_52432f5_trigger
 EXPOSE 80
 
 CMD ["/usr/local/bin/docker-entrypoint.sh"]
