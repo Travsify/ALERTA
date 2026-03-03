@@ -28,10 +28,14 @@ WORKDIR /var/www/html
 # Copy project files from the alerta_backend directory
 COPY alerta_backend/ .
 
-# Install dependencies (temporarily allowing dev for debugging)
-RUN composer install --no-interaction --optimize-autoloader \
+# Install dependencies
+# We use --no-scripts to avoid database connection attempts during build (e.g. filament:upgrade)
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Ensure Nginx symlink exists
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Create Nginx configuration template for the public folder
 RUN echo 'server { \

@@ -63,12 +63,14 @@ chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # 7. Laravel boot sequence (no caching to avoid stale config)
+echo "Running Laravel boot sequence..."
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
-php artisan filament:upgrade --ansi
+php artisan package:discover --ansi || echo "Package discovery failed"
+php artisan filament:upgrade --ansi || echo "Filament upgrade failed"
 php artisan migrate --force || echo "Migration failed but continuing..."
 
 echo "=== Starting Nginx + PHP-FPM ==="
 nginx
-php-fpm
+exec php-fpm
