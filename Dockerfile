@@ -28,8 +28,8 @@ WORKDIR /var/www/html
 # Copy project files from the alerta_backend directory
 COPY alerta_backend/ .
 
-# Install dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev \
+# Install dependencies (temporarily allowing dev for debugging)
+RUN composer install --no-interaction --optimize-autoloader \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
