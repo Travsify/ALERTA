@@ -34,16 +34,20 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev --no-script
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Ensure Nginx symlink exists
-RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+# Ensure Nginx logs go to stdout/stderr
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Ensure Nginx directories exist and are clean
+RUN mkdir -p /etc/nginx/sites-enabled && rm -f /etc/nginx/sites-enabled/*
 
 # Create Nginx configuration template for the public folder
 RUN echo 'server { \
-    listen 80; \
+    listen 80 default_server; \
+    server_name _; \
     index index.php index.html; \
     root /var/www/html/public; \
     location /test-debug { \
-    return 200 "NGINX_IS_ALIVE_ROOT_IS_PUBLIC"; \
+    return 200 "NGINX_IS_ALIVE_ROOT_IS_PUBLIC_PORT_$PORT"; \
     } \
     location / { \
     try_files $uri $uri/ /index.php?$query_string; \
@@ -56,11 +60,10 @@ RUN echo 'server { \
     } \
     }' > /etc/nginx/sites-available/default.template
 
-# Copy the resilient start script (using the one from alerta_backend to root context if needed, but we'll use a modified root one)
+# Copy the resilient start script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# Fix Windows line endings if necessary
+# Fix Windows line endings
 RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh
 
 # Triggering fresh build trace: bc80d0b_52432f5_trigger

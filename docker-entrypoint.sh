@@ -4,11 +4,13 @@ set -x
 
 echo "=== Alerta Backend Startup (Resilient Debug) ==="
 
-# 1. Set dynamic port for Nginx
-if [ ! -z "$PORT" ]; then
-    sed -i "s/listen 80;/listen $PORT;/g" /etc/nginx/sites-available/default.template
+# 1. Set dynamic port for Nginx and Enable it
+echo "Configuring Nginx for port ${PORT:-80}..."
+if [ -z "$PORT" ]; then
+    PORT=80
 fi
-mv /etc/nginx/sites-available/default.template /etc/nginx/sites-available/default
+sed "s/listen 80 default_server;/listen $PORT default_server;/g" /etc/nginx/sites-available/default.template > /etc/nginx/sites-enabled/default
+rm -f /etc/nginx/sites-available/default.template # Clean up
 
 # 2. Force PHP-FPM to inherit environment variables
 cat > /usr/local/etc/php-fpm.d/env.conf <<EOF
