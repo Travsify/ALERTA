@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AlertController;
 
 // Health check - NO middleware, pure PHP response
 Route::get('/health', function () {
+    // dd(config('app')); // Uncomment if we still get 500
     return response()->json([
         'status' => 'ok',
         'timestamp' => now()->toIso8601String(),
