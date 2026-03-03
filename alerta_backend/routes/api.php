@@ -17,6 +17,26 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// Diagnostic routes - in API to bypass WEB middleware
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok_via_api',
+        'php' => PHP_VERSION,
+        'laravel' => app()->version(),
+        'env' => app()->environment(),
+        'debug' => config('app.debug'),
+    ]);
+});
+
+Route::get('/debug-db', function () {
+    try {
+        \DB::connection()->getPdo();
+        return response()->json(['status' => 'connected', 'driver' => config('database.default')]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+});
+
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
