@@ -1,4 +1,5 @@
 <?php
+// die("API_ROUTES_LIVE"); // Uncomment if needed
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PanicController;
